@@ -625,7 +625,7 @@ namespace dawn_native {
         }
 
         ResultOrError<EntryPointMetadataTable> ReflectShaderUsingTint(
-            DeviceBase*,
+            const DeviceBase* device,
             const tint::Program* program) {
             ASSERT(program->IsValid());
 
