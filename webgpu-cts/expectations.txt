@@ -510,7 +510,6 @@ crbug.com/dawn/1364 webgpu:api,validation,createTexture:texture_usage:* [ Failur
 # Failures from upgrading Intel Mac Minis to 12.4
 # KEEP
 ################################################################################
-crbug.com/dawn/1461 [ monterey intel ] webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="depth16unorm" [ Failure ]
 crbug.com/dawn/1461 [ monterey intel ] webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="depth24plus" [ Failure ]
 crbug.com/dawn/1461 [ monterey intel ] webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="depth24plus-stencil8" [ Failure ]
 
