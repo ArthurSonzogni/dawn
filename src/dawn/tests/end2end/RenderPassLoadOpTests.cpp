@@ -244,7 +244,7 @@ TEST_P(RenderPassLoadOpTests, LoadOpClearIntegerFormatsToLargeValues) {
 
     // TODO(crbug.com/dawn/1463): Re-enable, might be the same as above just on
     // 12.4 instead of 11.5.
-    DAWN_SUPPRESS_TEST_IF(IsMetal() && IsIntel() && IsMacOS(12, 4));
+    DAWN_SUPPRESS_TEST_IF(IsMetal() && IsIntel() && (IsMacOS(12, 4) || IsMacOS(12, 5)));
 
     constexpr double kUint32MaxDouble = 4294967295.0;
     constexpr uint32_t kUint32Max = static_cast<uint32_t>(kUint32MaxDouble);
@@ -398,7 +398,7 @@ TEST_P(RenderPassLoadOpTests, LoadOpClearIntegerFormatsOutOfBound_Uint32) {
 
     // TODO(crbug.com/dawn/1463): Re-enable, might be the same as above just on
     // 12.4 instead of 11.5.
-    DAWN_SUPPRESS_TEST_IF(IsMetal() && IsIntel() && IsMacOS(12, 4));
+    DAWN_SUPPRESS_TEST_IF(IsMetal() && IsIntel() && (IsMacOS(12, 4) || IsMacOS(12, 5)));
 
     constexpr uint64_t kUint32Max = std::numeric_limits<uint32_t>::max();
 
@@ -433,7 +433,7 @@ TEST_P(RenderPassLoadOpTests, LoadOpClearIntegerFormatsOutOfBound_Sint32) {
 
     // TODO(crbug.com/dawn/1463): Re-enable, might be the same as above just on
     // 12.4 instead of 11.5.
-    DAWN_SUPPRESS_TEST_IF(IsMetal() && IsIntel() && IsMacOS(12, 4));
+    DAWN_SUPPRESS_TEST_IF(IsMetal() && IsIntel() && (IsMacOS(12, 4) || IsMacOS(12, 5)));
 
     constexpr int64_t kSint32Max = std::numeric_limits<int32_t>::max();
     constexpr int64_t kSint32Min = std::numeric_limits<int32_t>::min();
