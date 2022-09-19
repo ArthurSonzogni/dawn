@@ -248,7 +248,7 @@ TEST_P(RenderPassLoadOpTests, LoadOpClearIntegerFormatsToLargeValues) {
 
     // TODO(crbug.com/dawn/1463): Re-enable, might be the same as above just on
     // 12.4 instead of 11.5.
-    DAWN_SUPPRESS_TEST_IF(IsMetal() && IsIntel() && IsMacOS(12, 4));
+    DAWN_SUPPRESS_TEST_IF(IsMetal() && IsIntel() && (IsMacOS(12, 4) || IsMacOS(12, 5)));
 
     constexpr double kUint32MaxDouble = 4294967295.0;
     constexpr uint32_t kUint32Max = static_cast<uint32_t>(kUint32MaxDouble);
