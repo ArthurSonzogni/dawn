@@ -465,6 +465,14 @@ crbug.com/dawn/1613 worker_webgpu:api,validation,buffer,mapping:mapAsync,state,m
 ################################################################################
 
 ################################################################################
+# Suppressions added just for the M110 branch, see crbug.com/1358575
+################################################################################
+crbug.com/dawn/0000 [ dawn-backend-validation intel-gen-9 ubuntu ] webgpu:api,validation,encoding,cmds,render,draw:buffer_binding_overlap:drawType="drawIndexedIndirect" [ Failure ]
+crbug.com/dawn/0000 [ dawn-backend-validation intel-gen-9 ubuntu ] webgpu:api,validation,encoding,cmds,render,draw:buffer_binding_overlap:drawType="drawIndirect" [ Failure ]
+crbug.com/dawn/0000 [ dawn-backend-validation intel-gen-9 ubuntu ] webgpu:api,validation,encoding,cmds,render,draw:unused_buffer_bound:smallIndexBuffer=false;smallVertexBuffer=false;smallInstanceBuffer=false [ Failure ]
+crbug.com/dawn/0000 [ dawn-backend-validation intel-gen-9 ubuntu ] webgpu:api,validation,encoding,cmds,render,draw:vertex_buffer_OOB:* [ Failure ]
+
+################################################################################
 # untriaged failures
 # KEEP
 ################################################################################
