@@ -473,6 +473,12 @@ crbug.com/dawn/0000 [ dawn-backend-validation intel-gen-9 ubuntu ] webgpu:api,va
 crbug.com/dawn/0000 [ dawn-backend-validation intel-gen-9 ubuntu ] webgpu:api,validation,encoding,cmds,render,draw:vertex_buffer_OOB:* [ Failure ]
 
 ################################################################################
+# webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_only:* fail on win10 Intel
+# KEEP
+################################################################################
+crbug.com/dawn/1628 [ intel-gen-9 win10 ] webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_only:* [ Failure ]
+
+################################################################################
 # untriaged failures
 # KEEP
 ################################################################################
