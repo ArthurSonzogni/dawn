@@ -560,6 +560,12 @@ crbug.com/tint/1755 [ win10 ] webgpu:shader,execution,expression,call,builtin,pa
 crbug.com/tint/1755 [ win10 ] webgpu:shader,execution,expression,call,builtin,pack4x8unorm:pack:inputSource="const" [ Failure ]
 
 ################################################################################
+# webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_only:* fail on win10 Intel
+# KEEP
+################################################################################
+crbug.com/dawn/1628 [ intel-gen-9 win10 ] webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_only:* [ Failure ]
+
+################################################################################
 # untriaged failures
 # KEEP
 ################################################################################
