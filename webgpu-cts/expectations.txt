@@ -547,6 +547,7 @@ crbug.com/dawn/1389 [ intel monterey ] webgpu:api,operation,resource_init,textur
 ################################################################################
 crbug.com/1357206 [ nvidia-0x2184 win10 ] worker_webgpu:api,validation,buffer,mapping:getMappedRange,offsetAndSizeAlignment,mappedAtCreation: [ Failure ]
 crbug.com/1357206 [ nvidia-0x2184 win10 ] worker_webgpu:api,validation,buffer,mapping:mapAsync,offsetAndSizeAlignment: [ Failure ]
+crbug.com/1406687 [ nvidia-0x2184 win10 ] worker_webgpu:api,validation,buffer,mapping:mapAsync,offsetAndSizeOOB: [ Failure ]
 
 ################################################################################
 # Const-eval version of bitwise XOR failing on Windows
