@@ -499,8 +499,9 @@ crbug.com/1421433 [ intel-gen-9 ubuntu ] webgpu:api,validation,encoding,cmds,ren
 crbug.com/1421433 [ intel-gen-9 ubuntu ] webgpu:api,validation,render_pipeline,inter_stage:interpolation_sampling:isAsync=true;* [ RetryOnFailure ]
 crbug.com/1421433 [ intel-gen-9 ubuntu ] webgpu:api,validation,render_pipeline,inter_stage:interpolation_type:isAsync=true;* [ RetryOnFailure ]
 crbug.com/1421433 [ intel-gen-9 ubuntu ] webgpu:web_platform,canvas,configure:alpha_mode:canvasType="offscreen" [ RetryOnFailure ]
-crbug.com/1421433 [ intel-gen-9 ubuntu ] webgpu:web_platform,copyToTexture,ImageBitmap:copy_subrect_from_2D_Canvas:orientation="none";* [ RetryOnFailure ]
-[ intel-0x3e9b mac ] webgpu:shader,execution,expression,binary,f32_arithmetic:addition:inputSource="uniform";vectorize=2 [ RetryOnFailure ]
+crbug.com/1421433 [ intel-gen-9 ubuntu ] webgpu:web_platform,copyToTexture,ImageBitmap:* [ RetryOnFailure ]
+[ nvidia-0x2184 ubuntu ] webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gpu_context_canvas:* [ RetryOnFailure ]
+webgpu:shader,execution,expression,binary,f32_arithmetic:* [ RetryOnFailure ]
 
 # Suppressions for failures on M112 branch builder
 [ amd-0x6821 mac ] webgpu:web_platform,canvas,readbackFromWebGPUCanvas:offscreenCanvas,snapshot:format="rgba16float";alphaMode="opaque";colorSpace="srgb";snapshotType="transferToImageBitmap" [ Failure ]
