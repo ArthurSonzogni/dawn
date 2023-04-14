@@ -764,7 +764,8 @@ crbug.com/dawn/0000 [ intel-0x9bc5 ubuntu webgpu-adapter-default ] webgpu:web_pl
 
 crbug.com/1406064 [ intel-gen-9 win10 ] webgpu:api,validation,error_scope:current_scope:errorFilter="out-of-memory";stackDepth=100000 [ Slow ]
 [ intel-gen-9 win10 ] webgpu:shader,execution,expression,binary,f32_arithmetic:addition* [ Slow ]
-[ intel-gen-9 mac ] webgpu:shader,execution,expression,binary,f32_arithmetic:addition* [ Slow ]
+[ intel-gen-9 linux ] webgpu:shader,execution,expression,binary,f32_arithmetic:addition* [ Slow ]
+[ intel-gen-9 mac ] webgpu:shader,execution,expression,binary,f32_arithmetic:addition* [ Failure ]
 [ dawn-backend-validation nvidia-0x2184 win10 target-cpu-32 ] webgpu:web_platform,copyToTexture,ImageBitmap:copy_subrect_from_ImageData:alpha="none";orientation="flipY";srcDoFlipYDuringCopy=true;dstPremultiplied=false [ Failure ]
-[ dawn-backend-validation nvidia-0x2184 win10 target-cpu-64 ] webgpu:web_platform,copyToTexture,ImageBitmap:copy_subrect_from_2D_Canvas:orientation="none";srcDoFlipYDuringCopy=false;dstPremultiplied=false [ RetryOnFailure ]
+[ dawn-backend-validation nvidia-0x2184 win10 target-cpu-64 ] webgpu:web_platform,copyToTexture,ImageBitmap:copy_subrect_from_2D_Canvas:orientation="none";srcDoFlipYDuringCopy=false;dstPremultiplied=false [ Failure ]
 [ amd-0x6821 mac ] webgpu:web_platform,canvas,readbackFromWebGPUCanvas:offscreenCanvas,snapshot:format="rgba16float";alphaMode="opaque";colorSpace="srgb";snapshotType="transferToImageBitmap" [ Failure ]
