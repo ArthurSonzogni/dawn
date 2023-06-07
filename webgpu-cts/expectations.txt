@@ -666,3 +666,13 @@ crbug.com/dawn/0000 [ dawn-backend-validation webgpu-adapter-default win10 ] web
 crbug.com/dawn/0000 [ dawn-backend-validation webgpu-adapter-default win10 ] webgpu:web_platform,copyToTexture,ImageBitmap:copy_subrect_from_2D_Canvas:orientation="none";srcDoFlipYDuringCopy=false;dstPremultiplied=false [ Failure ]
 crbug.com/dawn/0000 [ ventura ] webgpu:web_platform,copyToTexture,canvas:copy_contents_from_bitmaprenderer_context_canvas:* [ Failure ]
 crbug.com/dawn/0000 [ intel-0x9bc5 ubuntu webgpu-adapter-default ] webgpu:web_platform,copyToTexture,video:* [ Failure ]
+
+################################################################################
+# M115 branch failures/flakes
+# KEEP
+################################################################################
+crbug.com/1440850 [ mac intel webgpu-adapter-default ] webgpu:web_platform,copyToTexture,ImageBitmap:* [ Failure ]
+
+crbug.com/1440850 [ mac intel webgpu-adapter-default ] webgpu:web_platform,copyToTexture,canvas:* [ Failure ]
+
+crbug.com/1440850 [ mac intel webgpu-adapter-default ] webgpu:web_platform,canvas,readbackFromWebGPUCanvas:* [ Failure ]
