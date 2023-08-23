@@ -1719,7 +1719,7 @@ crbug.com/dawn/0000 [ dawn-backend-validation intel-0x9bc5 ubuntu webgpu-adapter
 crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 ubuntu webgpu-adapter-default ] webgpu:web_platform,copyToTexture,video:* [ Failure ]
 
 # Chromium M117 branch flakes and failures
-crbug.com/1472808 [ win10 intel-0x9bc5 target-cpu-32 ] webgpu:api,validation,capability_checks,limits,maxStorageBufferBindingSize:createBindGroup,at_over:limitTest="atMaximum";* [ RetryOnFailure ]
+crbug.com/1472808 [ win10 intel-0x9bc5 target-cpu-32 ] webgpu:api,validation,capability_checks,limits,maxStorageBufferBindingSize:createBindGroup,at_over:limitTest="atMaximum";* [ Failure ]
 crbug.com/1472808 [ win10 intel-0x9bc5 target-cpu-32 ] worker_webgpu:api,operation,compute,basic:large_dispatch:* [ Failure ]
 crbug.com/1472808 [ win10 intel-0x9bc5 target-cpu-32 ] webgpu:shader,validation,expression,call,builtin,length:* [ RetryOnFailure ]
 crbug.com/1472808 [ win10 intel-0x9bc5 target-cpu-32 ] webgpu:shader,validation,expression,call,builtin,round:* [ RetryOnFailure ]
