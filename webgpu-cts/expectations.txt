@@ -1174,6 +1174,7 @@ crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-32 webg
 crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-64 webgpu-dxc-enabled win10 ] webgpu:shader,validation,expression,call,builtin,atan2:values:stage="override";type="vec2%3Cf32%3E" [ Failure ]
 crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-64 webgpu-dxc-enabled win10 ] webgpu:shader,validation,expression,call,builtin,atan2:values:stage="override";type="vec3%3Cf16%3E" [ Failure ]
 crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-32 webgpu-dxc-disabled win10 ] webgpu:shader,validation,expression,call,builtin,atan2:values:stage="override";type="vec3%3Cf32%3E" [ Failure ]
+crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-64 webgpu-dxc-disabled win10 ] webgpu:shader,validation,expression,call,builtin,atan2:values:stage="override";type="vec3%3Cf32%3E" [ Failure ]
 crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-64 webgpu-dxc-enabled win10 ] webgpu:shader,validation,expression,call,builtin,atan2:values:stage="override";type="vec3%3Cf32%3E" [ Failure ]
 crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-64 webgpu-dxc-enabled win10 ] webgpu:shader,validation,expression,call,builtin,atan2:values:stage="override";type="vec4%3Cf16%3E" [ Failure ]
 crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-32 webgpu-dxc-disabled win10 ] webgpu:shader,validation,expression,call,builtin,atan2:values:stage="override";type="vec4%3Cf32%3E" [ Failure ]
@@ -1204,3 +1205,8 @@ crbug.com/dawn/0000 [ apple-angle-metal-renderer:-apple-m2 dawn-backend-validati
 crbug.com/dawn/0000 [ apple-angle-metal-renderer:-apple-m2 dawn-no-backend-validation ventura webgpu-adapter-swiftshader ] webgpu:web_platform,external_texture,* [ Failure ]
 crbug.com/dawn/0000 [ dawn-backend-validation intel-0x3e9b ventura webgpu-adapter-swiftshader ] webgpu:web_platform,external_texture,* [ Failure ]
 crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x3e9b ventura webgpu-adapter-swiftshader ] webgpu:web_platform,external_texture,* [ Failure ]
+
+################################################################################
+# M119 Suppressions
+################################################################################
+crbug.com/dawn/0000 [ dawn-no-backend-validation intel-0x9bc5 target-cpu-32 win10 ] webgpu:api,validation,capability_checks,limits,maxStorageBufferBindingSize:createBindGroup,at_over:limitTest="atMaximum";* [ Failure ]
