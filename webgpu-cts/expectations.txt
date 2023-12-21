@@ -766,6 +766,20 @@ crbug.com/dawn/2144 [ dawn-backend-validation nvidia-0x2184 webgpu-dxc-enabled w
 crbug.com/tint/2057 [ intel-0x9bc5 webgpu-dxc-enabled win10 ] webgpu:shader,execution,flow_control,loop:nested_loops:preventValueOptimizations=false [ Failure ]
 
 ################################################################################
+# Flaky failures on M120 branch
+################################################################################
+crbug.com/1497476 [ intel-0x3e9b ventura ] webgpu:shader,execution,zero_init:compute,zero_init:addressSpace="workgroup";workgroupSize=[7,7,3];batch__=12 [ RetryOnFailure ]
+crbug.com/1497476 [ intel-0x3e9b ventura ] webgpu:shader,execution,zero_init:compute,zero_init:addressSpace="workgroup";workgroupSize=[8,8,2];batch__=12 [ RetryOnFailure ]
+crbug.com/1497476 [ intel-0x3e9b ventura ] webgpu:shader,execution,zero_init:compute,zero_init:addressSpace="workgroup";workgroupSize=[33,1,1];batch__=12 [ RetryOnFailure ]
+crbug.com/1511394 [ intel-0x9bc5 ubuntu ] webgpu:api,validation,render_pipeline,fragment_state:targets_format_renderable:isAsync=true;format="r16uint" [ RetryOnFailure ]
+crbug.com/1511394 [ intel-0x9bc5 ubuntu ] webgpu:web_platform,canvas,configure:viewFormats:canvasType="onscreen";format="rgba8unorm";viewFormatFeature="_undef_" [ RetryOnFailure ]
+crbug.com/1511394 [ nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:createView,2d,uncompressed_format:* [ RetryOnFailure ]
+crbug.com/1511394 [ nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-enabled win10 ] webgpu:api,validation,state,device_lost,destroy:createView,2d,uncompressed_format:* [ RetryOnFailure ]
+crbug.com/1511394 [ nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:createTexture,2d,uncompressed_format:* [ RetryOnFailure ]
+crbug.com/1511394 [ nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-enabled win10 ] webgpu:api,validation,state,device_lost,destroy:createTexture,2d,uncompressed_format:* [ RetryOnFailure ]
+
+
+################################################################################
 # New flakes. Please triage:
 ################################################################################
 crbug.com/dawn/0000 [ apple-angle-metal-renderer:-apple-m2 dawn-backend-validation target-cpu-64 ventura webgpu-adapter-default ] webgpu:api,operation,compute_pipeline,overrides:workgroup_size:isAsync=false;type="i32";size=3;v="z" [ RetryOnFailure ]
@@ -785,10 +799,6 @@ crbug.com/dawn/0000 [ dawn-no-backend-validation nvidia-0x2184 target-cpu-64 web
 crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:createRenderBundleEncoder:format="r8sint";awaitLost=true [ RetryOnFailure ]
 crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:createTexture,2d,compressed_format:format="bc2-rgba-unorm";usageType="texture";usageCopy="src";awaitLost=false [ RetryOnFailure ]
 crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:createTexture,2d,compressed_format:format="bc2-rgba-unorm-srgb";usageType="texture";usageCopy="src";awaitLost=false [ RetryOnFailure ]
-crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-enabled win10 ] webgpu:api,validation,state,device_lost,destroy:createTexture,2d,uncompressed_format:* [ RetryOnFailure ]
-crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:createView,2d,uncompressed_format:format="r32sint";usageType="storage";usageCopy="src-dest";awaitLost=true [ RetryOnFailure ]
-crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:createView,2d,uncompressed_format:format="r32uint";usageType="render";usageCopy="src";awaitLost=true [ RetryOnFailure ]
-crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:createView,2d,uncompressed_format:format="r8sint";usageType="texture";usageCopy="dst";awaitLost=true [ RetryOnFailure ]
 crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:importExternalTexture:sourceType="VideoElement";awaitLost=true [ RetryOnFailure ]
 crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:queue,writeTexture,2d,compressed_format:format="bc2-rgba-unorm-srgb";awaitLost=false [ RetryOnFailure ]
 crbug.com/dawn/0000 [ dawn-backend-validation nvidia-0x2184 target-cpu-64 webgpu-adapter-default webgpu-dxc-disabled win10 ] webgpu:api,validation,state,device_lost,destroy:queue,writeTexture,2d,compressed_format:format="bc6h-rgb-float";awaitLost=false [ RetryOnFailure ]
