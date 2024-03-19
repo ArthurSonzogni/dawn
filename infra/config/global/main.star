@@ -155,7 +155,7 @@ def get_dimension(os, builder_name = None):
         if "cmake" in builder_name:
             # CMake build runs Tint e2e tests, which must run on 11+ where the metal
             # compiler (xcrun) supports texel fetch (chromium_experimental_framebuffer_fetch)
-            return "Mac-11"
+            return "Mac-11|Mac-12|Mac-13"
         else:
             return "Mac-10.15|Mac-11"
     elif os.category == os_category.WINDOWS:
@@ -753,6 +753,8 @@ dawn_cmake_standalone_builder("cmake-linux-clang-rel-x64-asan", clang = True, de
 dawn_cmake_standalone_builder("cmake-linux-clang-rel-x64-ubsan", clang = True, debug = False, cpu = "x64", asan = False, ubsan = True)
 dawn_cmake_standalone_builder("cmake-mac-dbg", clang = True, debug = True, cpu = "x64", asan = False, ubsan = False, experimental = True)
 dawn_cmake_standalone_builder("cmake-mac-rel", clang = True, debug = False, cpu = "x64", asan = False, ubsan = False, experimental = True)
+dawn_cmake_standalone_builder("cmake-win-msvc-dbg-x64", clang = False, debug = True, cpu = "x64", asan = False, ubsan = False)
+dawn_cmake_standalone_builder("cmake-win-msvc-rel-x64", clang = False, debug = False, cpu = "x64", asan = False, ubsan = False)
 
 chromium_dawn_tryjob("linux")
 chromium_dawn_tryjob("mac")

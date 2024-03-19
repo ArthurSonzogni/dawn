@@ -382,11 +382,19 @@ MaybeError PhysicalDevice::InitializeSupportedLimitsImpl(CombinedLimits* limits)
 FeatureValidationResult PhysicalDevice::ValidateFeatureSupportedWithTogglesImpl(
     wgpu::FeatureName feature,
     const TogglesState& toggles) const {
-    // The feature `shader-f16` requires DXC 1.4 or higher. Note that DXC version is checked in
-    // InitializeSupportedFeaturesImpl.
-    if (feature == wgpu::FeatureName::ShaderF16 && !toggles.IsEnabled(Toggle::UseDXC)) {
-        return FeatureValidationResult(absl::StrFormat(
-            "Feature %s requires DXC for D3D12.", GetInstance()->GetFeatureInfo(feature)->name));
+    if (!toggles.IsEnabled(Toggle::UseDXC)) {
+        // Disable features that require DXC.
+        switch (feature) {
+            // The feature `shader-f16` requires DXC 1.4 or higher. Note that DXC version is checked
+            // in InitializeSupportedFeaturesImpl.
+            case wgpu::FeatureName::ShaderF16:
+            case wgpu::FeatureName::ChromiumExperimentalSubgroups:
+                return FeatureValidationResult(
+                    absl::StrFormat("Feature %s requires DXC for D3D12.",
+                                    GetInstance()->GetFeatureInfo(feature)->name));
+            default:
+                break;
+        }
     }
     return {};
 }
@@ -511,7 +519,7 @@ void PhysicalDevice::SetupBackendAdapterToggles(TogglesState* adapterToggles) co
     // Check for use_dxc toggle
 #ifdef DAWN_USE_BUILT_DXC
     // Default to using DXC. If shader model < 6.0, though, we must use FXC.
-    if (GetDeviceInfo().shaderModel <= 60) {
+    if (GetDeviceInfo().shaderModel < 60) {
         adapterToggles->ForceSet(Toggle::UseDXC, false);
     }
 
@@ -711,6 +719,19 @@ void PhysicalDevice::SetupBackendDeviceToggles(TogglesState* deviceToggles) cons
     // See https://crbug.com/tint/1798 for more information.
     if (gpu_info::IsIntel(vendorId) && !deviceToggles->IsEnabled(Toggle::UseDXC)) {
         deviceToggles->Default(Toggle::D3D12PolyfillReflectVec2F32, true);
+    }
+
+    // Currently this workaround is needed on old Intel drivers and newer version of Windows 11.
+    // See http://crbug.com/dawn/2308 for more information.
+    if (gpu_info::IsIntel(vendorId)) {
+        constexpr uint64_t kAffectedMinimumWindowsBuildNumber = 25957u;
+        const gpu_info::DriverVersion kAffectedMaximumDriverVersion = {27, 20, 100, 9664};
+        if (GetBackend()->GetFunctions()->GetWindowsBuildNumber() >=
+                kAffectedMinimumWindowsBuildNumber &&
+            gpu_info::CompareWindowsDriverVersion(vendorId, GetDriverVersion(),
+                                                  kAffectedMaximumDriverVersion) <= 0) {
+            deviceToggles->Default(Toggle::DisableResourceSuballocation, true);
+        }
     }
 }
 

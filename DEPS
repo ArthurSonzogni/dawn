@@ -97,7 +97,7 @@ deps = {
   },
 
   'third_party/depot_tools': {
-    'url': '{chromium_git}/chromium/tools/depot_tools.git@fe6a359a803f55829ede3666215d080f6775f173',
+    'url': '{chromium_git}/chromium/tools/depot_tools.git@ca4cfdaf00d28ceb9c801779a852ad017f6326c1',
     'condition': 'dawn_standalone',
   },
 
@@ -179,7 +179,7 @@ deps = {
   },
 
   'third_party/angle': {
-    'url': '{chromium_git}/angle/angle@aea2abc1ad08ded9672cc2f198bd53a62dee1b38',
+    'url': '{chromium_git}/angle/angle@d2cef82a8fd31e1792d845c79b1c85f8c820566c',
     'condition': 'dawn_standalone',
   },
 
@@ -189,7 +189,7 @@ deps = {
   },
 
   'third_party/vulkan-deps': {
-    'url': '{chromium_git}/vulkan-deps@89cf90041e49488324957f219c264ca366a970be',
+    'url': '{chromium_git}/vulkan-deps@ba66ec69216da9131d8e382f6e8c64380d4856f3',
     'condition': 'dawn_standalone',
   },
 
@@ -199,12 +199,12 @@ deps = {
   },
 
   'third_party/abseil-cpp': {
-    'url': '{chromium_git}/chromium/src/third_party/abseil-cpp@b3ae305fd5dbc6ad41eed9add26768c29181219f',
+    'url': '{chromium_git}/chromium/src/third_party/abseil-cpp@1cd1f16ff8f7fb5402aeda870c82652edf8f663a',
     'condition': 'dawn_standalone',
   },
 
   'third_party/dxc': {
-    'url': '{chromium_git}/external/github.com/microsoft/DirectXShaderCompiler@3fc84bf9417285ed980b6c973ba2ec1d15822609',
+    'url': '{chromium_git}/external/github.com/microsoft/DirectXShaderCompiler@6f4f758e9b3be1991956f99600982755596e29dc',
   },
 
   'third_party/dxheaders': {
@@ -223,7 +223,7 @@ deps = {
 
   # WebGPU CTS - not used directly by Dawn, only transitively by Chromium.
   'third_party/webgpu-cts': {
-    'url': '{chromium_git}/external/github.com/gpuweb/cts@561ab2a7cb4a9013d48d086515b882eda2bd14f5',
+    'url': '{chromium_git}/external/github.com/gpuweb/cts@3e45aee0b16dc724a79a0feb0490e2ddb06c9f0d',
     'condition': 'build_with_chromium',
   },
 
@@ -288,6 +288,17 @@ deps = {
 
   'tools/protoc_wrapper': {
     'url': '{chromium_git}/chromium/src/tools/protoc_wrapper@b5ea227bd88235ab3ccda964d5f3819c4e2d8032',
+    'condition': 'dawn_standalone',
+  },
+
+  # Dependencies for tintd.
+  'third_party/jsoncpp': {
+    'url': '{github_git}/open-source-parsers/jsoncpp.git@69098a18b9af0c47549d9a271c054d13ca92b006',
+    'condition': 'dawn_standalone',
+  },
+
+  'third_party/langsvr': {
+    'url': '{github_git}/google/langsvr.git@a34f394de431efaeb79bec26577389516b531e31',
     'condition': 'dawn_standalone',
   },
 
