@@ -86,6 +86,22 @@
 # Last rolled: 2024-05-10 11:42:51AM
 
 ################################################################################
+# Expectations for M126
+# KEEP
+################################################################################
+[ intel-0x9bc5 ubuntu ] webgpu:api,operation,adapter,requestDevice:limit,better_than_supported:limit="maxSamplersPerShaderStage" [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:api,validation,render_pipeline,shader_module:invalid,fragment:isAsync=true;isFragmentShaderValid=true [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:api,validation,render_pipeline,shader_module:invalid,vertex:isAsync=true;isVertexShaderValid=true [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:api,validation,render_pipeline,misc:vertex_state_only:isAsync=true [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:shader,execution,robust_access:linear_memory:addressSpace="storage";storageMode="read_write";access="write";dynamicOffset=false;containerType="matrix";shadowingMode="function-scope";isAtomic=false;baseType="f32" [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:shader,execution,robust_access:linear_memory:addressSpace="private";access="write";containerType="matrix";shadowingMode="none";isAtomic=false;baseType="f16" [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:api,operation,command_buffer,image_copy:origins_and_extents:initMethod="CopyB2T";checkMethod="FullCopyT2B";format="rgba8unorm-srgb";dimension="2d" [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:api,operation,command_buffer,image_copy:origins_and_extents:initMethod="CopyB2T";checkMethod="FullCopyT2B";format="rg16uint";dimension="2d" [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:api,operation,storage_texture,read_write:basic:format="r32sint";shaderStage="compute";textureDimension="3d";depthOrArrayLayers=1 [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:web_platform,canvas,configure:format:canvasType="offscreen";format="astc-10x10-unorm-srgb" [ Failure ]
+[ intel-0x9bc5 ubuntu ] webgpu:shader,validation,decl,let:initializer_type: [ Failure ]
+
+################################################################################
 # SharedImage interop failures on Linux
 # Skipped instead of just Crash because of the number of failures
 # KEEP
