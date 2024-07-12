@@ -1659,3 +1659,6 @@ crbug.com/dawn/0000 [ nvidia-0x2184 webgpu-dxc-enabled win10 ] webgpu:shader,val
 crbug.com/dawn/0000 [ nvidia-0x2184 webgpu-dxc-enabled win10 ] webgpu:shader,validation,expression,matrix,mul:overflow_mat_f16_internal:lhs=1;c=4;r=3 [ Failure ]
 crbug.com/dawn/0000 [ nvidia-0x2184 webgpu-dxc-enabled win10 ] webgpu:shader,validation,expression,matrix,mul:overflow_mat_f16_internal:lhs=1;c=4;r=4 [ Failure ]
 crbug.com/dawn/0000 [ webgpu-dxc-disabled win10 ] webgpu:shader,execution,memory_model,barrier:workgroup_barrier_store_load:accessValueType="u32";memType="non_atomic_texture";accessPair="wr";normalBarrier=true [ Failure ]
+
+# Expectations backported for M127
+crbug.com/dawn/0000 [ dawn-backend-validation intel-0x9bc5 ubuntu ] webgpu:shader,execution,expression,call,builtin,textureDimensions:storage:* [ Failure ]
