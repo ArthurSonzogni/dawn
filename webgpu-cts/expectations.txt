@@ -1464,6 +1464,10 @@ crbug.com/dawn/0000 [ nvidia-0x2184 webgpu-dxc-enabled win10 ] webgpu:shader,val
 crbug.com/dawn/0000 [ nvidia-0x2184 webgpu-dxc-enabled win10 ] webgpu:shader,validation,expression,call,builtin,normalize:values:stage="override";type="vec3%3Cf16%3E" [ Failure ]
 crbug.com/dawn/0000 [ nvidia-0x2184 webgpu-dxc-enabled win10 ] webgpu:shader,validation,expression,call,builtin,normalize:values:stage="override";type="vec4%3Cf16%3E" [ Failure ]
 
+# Failures due to change in `@align()` validation.
+crbug.com/375467276 webgpu:shader,execution,expression,access,structure,index:buffer_align:* [ Failure ]
+crbug.com/375467276 webgpu:shader,validation,shader_io,align:* [ Failure ]
+
 ################################################################################
 # Test bugs <https://github.com/gpuweb/cts/issues/3657>
 # Unclear why expectations were added only for win10; they fail locally on Mac.
