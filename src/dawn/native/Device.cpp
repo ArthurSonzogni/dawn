@@ -637,6 +637,10 @@ void DeviceBase::Destroy() {
             // complete before proceeding with destruction.
             // Ignore errors so that we can continue with destruction
             IgnoreErrors(mQueue->WaitForIdleForDestruction());
+
+            // Call TickImpl once last time to clean up resources
+            // Ignore errors so that we can continue with destruction
+            IgnoreErrors(TickImpl());
             break;
 
         case State::BeingDisconnected:
@@ -660,10 +664,6 @@ void DeviceBase::Destroy() {
         mQueue->AssumeCommandsComplete();
         DAWN_ASSERT(mQueue->GetCompletedCommandSerial() == mQueue->GetLastSubmittedCommandSerial());
         mQueue->Tick(mQueue->GetCompletedCommandSerial());
-
-        // Call TickImpl once last time to clean up resources
-        // Ignore errors so that we can continue with destruction
-        IgnoreErrors(TickImpl());
     }
 
     // At this point GPU operations are always finished, so we are in the disconnected state.
@@ -681,7 +681,6 @@ void DeviceBase::Destroy() {
     // Note: mQueue is not released here since the application may still get it after calling
     // Destroy() via APIGetQueue.
     if (mQueue != nullptr) {
-        mQueue->AssumeCommandsComplete();
         mQueue->Destroy();
     }
 
@@ -727,6 +726,7 @@ void DeviceBase::HandleError(std::unique_ptr<ErrorData> error,
         // Disconnected so we can detect this case in WaitForIdleForDestruction.
         if (ErrorInjectorEnabled()) {
             IgnoreErrors(mQueue->WaitForIdleForDestruction());
+            IgnoreErrors(TickImpl());
         }
 
         // A real device lost happened. Set the state to disconnected as the device cannot be
