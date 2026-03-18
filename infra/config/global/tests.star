@@ -38,7 +38,6 @@ load("@chromium-luci//targets.star", "targets")
 targets.tests.gtest_test(
     name = "dawn_end2end_capture_replay_tests",
     mixins = [
-        "dawn_end2end_real_hardware_gtests_common_args",
         "result_adapter_gtest_json",
         "true_noop_merge",
         targets.mixin(
@@ -57,7 +56,6 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "dawn_end2end_implicit_sync_tests",
     mixins = [
-        "dawn_end2end_real_hardware_gtests_common_args",
         "result_adapter_gtest_json",
         "true_noop_merge",
         targets.mixin(
@@ -76,7 +74,6 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "dawn_end2end_no_dxc_tests",
     mixins = [
-        "dawn_end2end_real_hardware_gtests_common_args",
         "disable_dxc",
         "result_adapter_gtest_json",
         "true_noop_merge",
@@ -92,7 +89,6 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "dawn_end2end_no_dxc_validation_layers_tests",
     mixins = [
-        "dawn_end2end_real_hardware_gtests_common_args",
         "disable_dxc",
         "enable_backend_validation",
         "result_adapter_gtest_json",
@@ -109,7 +105,6 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "dawn_end2end_skip_validation_tests",
     mixins = [
-        "dawn_end2end_real_hardware_gtests_common_args",
         "result_adapter_gtest_json",
         "true_noop_merge",
         targets.mixin(
@@ -162,7 +157,6 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "dawn_end2end_tests",
     mixins = [
-        "dawn_end2end_real_hardware_gtests_common_args",
         "result_adapter_gtest_json",
         "true_noop_merge",
         targets.mixin(
@@ -178,7 +172,6 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "dawn_end2end_validation_layers_tests",
     mixins = [
-        "dawn_end2end_real_hardware_gtests_common_args",
         "enable_backend_validation",
         "result_adapter_gtest_json",
         "true_noop_merge",
@@ -213,7 +206,6 @@ targets.tests.gtest_test(
 targets.tests.gtest_test(
     name = "dawn_end2end_wire_tests",
     mixins = [
-        "dawn_end2end_real_hardware_gtests_common_args",
         "result_adapter_gtest_json",
         "true_noop_merge",
         "use_wire",
@@ -293,6 +285,29 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "dawn_wire_trace_end2end_sws_tests",
+    mixins = [
+        "adapter_vendor_id_sws",
+        "clusterfuzz_wire_trace_dir",
+        "result_adapter_gtest_json",
+        "use_wire",
+        "wire_trace_merge",
+    ],
+    binary = "dawn_end2end_tests",
+)
+
+targets.tests.gtest_test(
+    name = "dawn_wire_trace_unittests",
+    mixins = [
+        "clusterfuzz_wire_trace_dir",
+        "result_adapter_gtest_json",
+        "use_wire",
+        "wire_trace_merge",
+    ],
+    binary = "dawn_unittests",
+)
+
+targets.tests.gtest_test(
     name = "dawn_wire_unittests",
     mixins = [
         "result_adapter_gtest_json",
@@ -315,12 +330,26 @@ targets.tests.isolated_script_test(
     name = "tint_ir_fuzzer_corpus_check_tests",
     mixins = [
         "result_adapter_single",
+        "tint_fuzzer_corpus_common_args",
         "true_noop_merge",
     ],
     args = [
         "-check",
         "-ir",
-        "--append-cwd-as-build",
+    ],
+    binary = "fuzzer_corpus_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "tint_ir_fuzzer_corpus_generate_tests",
+    mixins = [
+        "result_adapter_single",
+        "tint_fuzzer_corpus_common_args",
+        "tint_fuzzer_corpus_generate_args",
+        "tint_ir_merge",
+    ],
+    args = [
+        "-ir",
     ],
     binary = "fuzzer_corpus_tests",
 )
@@ -338,6 +367,7 @@ targets.tests.isolated_script_test(
     name = "tint_wgsl_fuzzer_corpus_check_tests",
     mixins = [
         "result_adapter_single",
+        "tint_fuzzer_corpus_common_args",
         "true_noop_merge",
         targets.mixin(
             swarming = targets.swarming(
@@ -349,7 +379,17 @@ targets.tests.isolated_script_test(
     ],
     args = [
         "-check",
-        "--append-cwd-as-build",
+    ],
+    binary = "fuzzer_corpus_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "tint_wgsl_fuzzer_corpus_generate_tests",
+    mixins = [
+        "result_adapter_single",
+        "tint_fuzzer_corpus_common_args",
+        "tint_fuzzer_corpus_generate_args",
+        "tint_wgsl_merge",
     ],
     binary = "fuzzer_corpus_tests",
 )

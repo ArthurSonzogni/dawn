@@ -43,6 +43,9 @@ targets.bundle(
         "dawn_end2end_validation_layers_tests",
         "dawn_end2end_wire_tests",
     ],
+    mixins = [
+        "dawn_end2end_real_hardware_gtests_common_args",
+    ],
 )
 
 targets.bundle(
@@ -50,6 +53,28 @@ targets.bundle(
     targets = [
         "dawn_end2end_no_dxc_tests",
         "dawn_end2end_no_dxc_validation_layers_tests",
+    ],
+    mixins = [
+        "dawn_end2end_real_hardware_gtests_common_args",
+    ],
+)
+
+targets.bundle(
+    name = "dawn_end2end_sws_tsan_gtests",
+    targets = [
+        "dawn_end2end_implicit_sync_tests",
+        "dawn_end2end_skip_validation_tests",
+        "dawn_end2end_tests",
+        "dawn_end2end_wire_tests",
+    ],
+    mixins = [
+        "dawn_end2end_sws_tsan_gtest_common_args",
+        # Increase sharding due to TSan slowness.
+        targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
     ],
 )
 
@@ -104,6 +129,14 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "tint_fuzzer_corpus_generate_tests",
+    targets = [
+        "tint_ir_fuzzer_corpus_generate_tests",
+        "tint_wgsl_fuzzer_corpus_generate_tests",
+    ],
+)
+
+targets.bundle(
     name = "win_software_renderer_gtests",
     targets = [
         "swiftshader_gtests",
@@ -116,5 +149,13 @@ targets.bundle(
     targets = [
         "dawn_node_software_d3d12_cts",
         "tint_benchmark",
+    ],
+)
+
+targets.bundle(
+    name = "wire_trace_gtests",
+    targets = [
+        "dawn_wire_trace_end2end_sws_tests",
+        "dawn_wire_trace_unittests",
     ],
 )
