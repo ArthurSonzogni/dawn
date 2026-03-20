@@ -78,13 +78,11 @@ ResultOrError<Ref<BufferBase>> CreateBufferFromData(DeviceBase* device,
 
 ResultOrError<Ref<PipelineLayoutBase>> MakeBasicPipelineLayout(
     DeviceBase* device,
-    const Ref<BindGroupLayoutBase>& bindGroupLayout,
-    uint32_t immediateSize) {
+    const Ref<BindGroupLayoutBase>& bindGroupLayout) {
     PipelineLayoutDescriptor descriptor;
     descriptor.bindGroupLayoutCount = 1;
     BindGroupLayoutBase* bgl = bindGroupLayout.Get();
     descriptor.bindGroupLayouts = &bgl;
-    descriptor.immediateSize = immediateSize;
     return device->CreatePipelineLayout(&descriptor);
 }
 
