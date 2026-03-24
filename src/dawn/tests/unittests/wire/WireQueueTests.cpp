@@ -230,12 +230,7 @@ TEST_F(WireQueueTests, DefaultQueueThenDeviceReleased) {
 
     EXPECT_CALL(api, QueueRelease(apiQueue));
     EXPECT_CALL(api, DeviceRelease(apiDevice));
-    // These set X callback methods are called before the device is released.
-    EXPECT_CALL(api, OnDeviceSetLoggingCallback(apiDevice, _)).Times(1);
     FlushClient();
-
-    // Indicate to the fixture that the device was already released.
-    DefaultApiDeviceWasReleased();
 }
 
 // Test the device, then its default queue. The default queue should be released when its external
@@ -250,17 +245,12 @@ TEST_F(WireQueueTests, DeviceThenDefaultQueueReleased) {
     device = nullptr;
 
     EXPECT_CALL(api, DeviceRelease(apiDevice));
-    // These set X callback methods are called before the device is released.
-    EXPECT_CALL(api, OnDeviceSetLoggingCallback(apiDevice, _)).Times(1);
     FlushClient();
 
     // Release the external queue reference. The queue should be released.
     queue = nullptr;
     EXPECT_CALL(api, QueueRelease(apiQueue));
     FlushClient();
-
-    // Indicate to the fixture that the device was already released.
-    DefaultApiDeviceWasReleased();
 }
 
 // Test that QueueSubmit does an implicit call to OnSubmittedWorkDone for its own tracking, and that
