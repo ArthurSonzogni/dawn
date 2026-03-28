@@ -127,6 +127,7 @@ MATCHER_P(CHandleIs, cType, "") {
     } while (0)
 
 namespace wire {
+class CommandSerializer;
 class WireClient;
 class WireServer;
 namespace client {
@@ -176,8 +177,11 @@ class WireTest : virtual public testing::Test {
     wgpu::Queue queue;
     WGPUQueue apiQueue;
 
-    dawn::wire::WireServer* GetWireServer();
-    dawn::wire::WireClient* GetWireClient();
+    wire::WireServer* GetWireServer();
+    wire::WireClient* GetWireClient();
+
+    wire::CommandSerializer* GetC2SSerializer();
+    wire::CommandSerializer* GetS2CSerializer();
 
     size_t GetC2SMaxAllocationSize();
 
@@ -185,17 +189,17 @@ class WireTest : virtual public testing::Test {
     void DeleteClient();
 
   private:
-    virtual dawn::wire::client::MemoryTransferService* GetClientMemoryTransferService();
-    virtual dawn::wire::server::MemoryTransferService* GetServerMemoryTransferService();
+    virtual wire::client::MemoryTransferService* GetClientMemoryTransferService();
+    virtual wire::server::MemoryTransferService* GetServerMemoryTransferService();
 
     // Devices created on the server MUST call Device.Destroy at least once. This map is used to
     // ensure that this invariant holds true for any devices returned.
     absl::flat_hash_map<WGPUDevice, bool> mDeviceDestroyed;
 
-    std::unique_ptr<dawn::wire::WireServer> mWireServer;
-    std::unique_ptr<dawn::wire::WireClient> mWireClient;
-    std::unique_ptr<dawn::utils::TerribleCommandBuffer> mS2cBuf;
-    std::unique_ptr<dawn::utils::TerribleCommandBuffer> mC2sBuf;
+    std::unique_ptr<wire::WireServer> mWireServer;
+    std::unique_ptr<wire::WireClient> mWireClient;
+    std::unique_ptr<utils::TerribleCommandBuffer> mS2cBuf;
+    std::unique_ptr<utils::TerribleCommandBuffer> mC2sBuf;
 };
 
 }  // namespace dawn

@@ -91,6 +91,10 @@ Handle WireClient::GetWireHandle(WGPUDevice device) const {
     return wireDevice->GetWireHandle(mImpl.get());
 }
 
+client::Client* WireClient::GetImplForTesting() {
+    return mImpl.get();
+}
+
 namespace client {
 MemoryTransferService::MemoryTransferService() = default;
 

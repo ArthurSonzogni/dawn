@@ -246,6 +246,14 @@ wire::WireClient* WireTest::GetWireClient() {
     return mWireClient.get();
 }
 
+wire::CommandSerializer* WireTest::GetC2SSerializer() {
+    return mC2sBuf.get();
+}
+
+wire::CommandSerializer* WireTest::GetS2CSerializer() {
+    return mS2cBuf.get();
+}
+
 size_t WireTest::GetC2SMaxAllocationSize() {
     return mC2sBuf->GetMaximumAllocationSize();
 }
