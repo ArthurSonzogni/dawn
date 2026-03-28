@@ -63,12 +63,9 @@ struct ObjectDataBase {
 template <typename T>
 struct ObjectData : public ObjectDataBase<T> {};
 
-enum class BufferMapWriteState { Unmapped, Mapped, MapError };
-
 struct BufferMapState {
     std::unique_ptr<MemoryTransferService::ReadHandle> readHandle = nullptr;
     std::unique_ptr<MemoryTransferService::WriteHandle> writeHandle = nullptr;
-    BufferMapWriteState writeState = BufferMapWriteState::Unmapped;
 };
 
 template <>
