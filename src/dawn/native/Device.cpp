@@ -940,14 +940,14 @@ Future DeviceBase::APIPopErrorScope(const WGPUPopErrorScopeCallbackInfo& callbac
             WGPUStringView message = kEmptyOutputStringView;
             if (mScope) {
                 // Resolve errors from async tasks
-                for (auto task : mPendingAsyncTasks) {
+                for (auto& pendingTask : mPendingAsyncTasks) {
+                    ErrorGeneratingAsyncTask* task = pendingTask.task.Get();
                     // All the tasks should have completed unless this event was canceled.
-                    DAWN_ASSERT(task.task->GetState() == AsyncTaskState::Completed ||
+                    DAWN_ASSERT(task->IsCompleted() ||
                                 completionType != EventCompletionType::Ready);
-                    if (task.task->GetState() == AsyncTaskState::Completed &&
-                        task.task->IsError() &&
-                        task.captureErrorType == ToWGPUErrorType(task.task->GetErrorType())) {
-                        std::unique_ptr<ErrorData> error = task.task->AcquireError();
+                    if (task->IsCompleted() && task->IsError() &&
+                        pendingTask.captureErrorType == ToWGPUErrorType(task->GetErrorType())) {
+                        std::unique_ptr<ErrorData> error = task->AcquireError();
                         mScope->CaptureError(ToWGPUErrorType(error->GetType()),
                                              error->GetMessage());
                     }
