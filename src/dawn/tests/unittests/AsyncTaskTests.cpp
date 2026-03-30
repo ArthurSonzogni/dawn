@@ -118,12 +118,12 @@ TEST_F(AsyncTaskTest, Status) {
     auto task = taskManager.PostTask<AsyncTask>(
         [&mutex]() { std::scoped_lock<std::mutex> taskLock(mutex); });
 
-    ASSERT_NE(task->GetState(), AsyncTaskState::Completed);
+    ASSERT_FALSE(task->IsCompleted());
 
     // Allow the task to complete
     lock.unlock();
     task->Wait();
-    ASSERT_EQ(task->GetState(), AsyncTaskState::Completed);
+    ASSERT_TRUE(task->IsCompleted());
 }
 
 // Test coverage of the completion callbacks for tasks
