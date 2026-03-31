@@ -34,6 +34,7 @@
 #include "dawn/native/ChainUtils.h"
 #include "dawn/native/Features_autogen.h"
 #include "dawn/native/Instance.h"
+#include "dawn/native/Toggles.h"
 #include "dawn/native/webgpu/BackendWGPU.h"
 #include "dawn/native/webgpu/DeviceWGPU.h"
 
@@ -134,7 +135,10 @@ void PhysicalDevice::SetupBackendAdapterToggles(dawn::platform::Platform* platfo
                                                 TogglesState* adapterToggles) const {}
 
 void PhysicalDevice::SetupBackendDeviceToggles(dawn::platform::Platform* platform,
-                                               TogglesState* deviceToggles) const {}
+                                               TogglesState* deviceToggles) const {
+    // We should always use this toggle in order to capture the label.
+    deviceToggles->ForceSet(Toggle::UseUserDefinedLabelsInBackend, true);
+}
 
 ResultOrError<Ref<DeviceBase>> PhysicalDevice::CreateDeviceImpl(
     AdapterBase* adapter,

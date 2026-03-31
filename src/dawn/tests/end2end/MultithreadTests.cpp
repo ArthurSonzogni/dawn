@@ -1153,6 +1153,122 @@ TEST_P(MultithreadTests, DestroyTextureAndViewsAtSameTime) {
     }
 }
 
+// Test that creating, labeling and using various objects in parallel works.
+TEST_P(MultithreadTests, SetLabelInParallel) {
+    // TODO(crbug.com/451928481): multithread support in GL is incomplete
+    DAWN_SUPPRESS_TEST_IF(IsOpenGL() || IsOpenGLES());
+
+    constexpr uint32_t kNumThreads = 20;
+    constexpr uint32_t kSize = 1;
+
+    utils::RGBA8 initialColor(255, 255, 255, 255);
+    wgpu::Buffer buffer = utils::CreateBufferFromData(
+        device, wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::CopyDst, {initialColor});
+    wgpu::Texture texture =
+        CreateTexture(kSize, kSize, wgpu::TextureFormat::RGBA8Unorm,
+                      wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::TextureBinding);
+    wgpu::TextureView view = texture.CreateView();
+
+    // Create render pipeline once.
+    wgpu::ShaderModule vsModule = utils::CreateShaderModule(device, R"(
+        @vertex fn main(@builtin(vertex_index) i : u32) -> @builtin(position) vec4f {
+            const pos = array(vec2f(-1, -1), vec2f(3, -1), vec2f(-1, 3));
+            return vec4f(pos[i], 0.0, 1.0);
+        })");
+    wgpu::ShaderModule fsModule = utils::CreateShaderModule(device, R"(
+        @group(0) @binding(0) var s : sampler;
+        @group(0) @binding(1) var t : texture_2d<f32>;
+        @fragment fn main() -> @location(0) vec4f {
+            return textureSample(t, s, vec2f(0.5, 0.5));
+        }
+    )");
+
+    utils::ComboRenderPipelineDescriptor pipelineDesc;
+    pipelineDesc.vertex.module = vsModule;
+    pipelineDesc.cFragment.module = fsModule;
+    pipelineDesc.cTargets[0].format = wgpu::TextureFormat::RGBA8Unorm;
+    wgpu::RenderPipeline pipeline = device.CreateRenderPipeline(&pipelineDesc);
+
+    wgpu::Sampler sampler = device.CreateSampler();
+
+    utils::RGBA8 expectedColor(255, 0, 0, 255);
+    utils::RunInParallel(kNumThreads, [&](uint32_t index) {
+        // Set labels concurrently.
+        std::string bufferLabel = "ThreadBuffer" + std::to_string(index);
+        std::string textureLabel = "ThreadTexture" + std::to_string(index);
+        std::string viewLabel = "ThreadView" + std::to_string(index);
+
+        buffer.SetLabel(bufferLabel.c_str());
+        texture.SetLabel(textureLabel.c_str());
+        view.SetLabel(viewLabel.c_str());
+
+        // Update buffer data with the same color.
+        queue.WriteBuffer(buffer, 0, &expectedColor, sizeof(expectedColor));
+
+        // Copy buffer to texture.
+        wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+        wgpu::TexelCopyBufferInfo src = utils::CreateTexelCopyBufferInfo(buffer, 0, 256);
+        wgpu::TexelCopyTextureInfo dst = utils::CreateTexelCopyTextureInfo(texture);
+        wgpu::Extent3D copySize = {kSize, kSize, 1};
+        encoder.CopyBufferToTexture(&src, &dst, &copySize);
+
+        wgpu::BindGroup bindGroup =
+            utils::MakeBindGroup(device, pipeline.GetBindGroupLayout(0), {{0, sampler}, {1, view}});
+
+        // Render pass.
+        auto renderPass = utils::CreateBasicRenderPass(device, kSize, kSize);
+        wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPass.renderPassInfo);
+        pass.SetPipeline(pipeline);
+        pass.SetBindGroup(0, bindGroup);
+        pass.Draw(3);
+        pass.End();
+        wgpu::CommandBuffer commands = encoder.Finish();
+        queue.Submit(1, &commands);
+
+        EXPECT_PIXEL_RGBA8_EQ(expectedColor, renderPass.color, 0, 0);
+    });
+}
+
+// Test that setting label in parallel with a validation error doesn't race or crash.
+TEST_P(MultithreadTests, SetLabelAndValidationInParallel) {
+    // TODO(crbug.com/451928481): multithread support in GL is incomplete
+    DAWN_SUPPRESS_TEST_IF(IsOpenGL() || IsOpenGLES());
+
+    DAWN_TEST_UNSUPPORTED_IF(HasToggleEnabled("skip_validation"));
+
+    constexpr uint32_t kNumThreads = 20;
+    wgpu::Buffer buffer = CreateBuffer(4, wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::CopyDst);
+
+    utils::RunInParallel(kNumThreads, [&](uint32_t index) {
+        // Set label concurrently.
+        std::string bufferLabel = "ThreadBuffer" + std::to_string(index);
+        buffer.SetLabel(bufferLabel.c_str());
+
+        // Perform an invalid operation (copy buffer to itself).
+        wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+        encoder.CopyBufferToBuffer(buffer, 0, buffer, 0, 4);
+
+        device.PushErrorScope(wgpu::ErrorFilter::Validation);
+        wgpu::CommandBuffer commands = encoder.Finish();
+        queue.Submit(1, &commands);
+
+        std::atomic<bool> errorThrown(false);
+        device.PopErrorScope(wgpu::CallbackMode::AllowProcessEvents,
+                             [&errorThrown](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type,
+                                            wgpu::StringView message) {
+                                 EXPECT_EQ(status, wgpu::PopErrorScopeStatus::Success);
+                                 EXPECT_EQ(type, wgpu::ErrorType::Validation);
+                                 EXPECT_THAT(std::string(message),
+                                             testing::HasSubstr("ThreadBuffer"));
+                                 errorThrown = true;
+                             });
+
+        while (!errorThrown.load()) {
+            WaitABit();
+        }
+    });
+}
+
 class MultithreadCachingTests : public MultithreadTests {
   protected:
     wgpu::ShaderModule CreateComputeShaderModule() const {

@@ -325,6 +325,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -358,6 +359,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -674,6 +676,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -817,6 +820,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -949,6 +953,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -1109,6 +1114,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -1154,6 +1160,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -1778,6 +1785,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -1844,6 +1852,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -1908,6 +1917,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -2753,6 +2763,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -2843,6 +2854,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -2936,6 +2948,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -2978,6 +2991,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -3080,6 +3094,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -3405,6 +3420,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -3440,6 +3456,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -3642,6 +3659,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -3677,6 +3695,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -4058,6 +4077,7 @@
             },
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -4370,6 +4390,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
@@ -4382,6 +4403,7 @@
         "methods": [
             {
                 "name": "set label",
+                "no autolock": true,
                 "args": [
                     {"name": "label", "type": "string view"}
                 ]
