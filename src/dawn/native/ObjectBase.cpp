@@ -27,12 +27,14 @@
 
 #include "dawn/native/ObjectBase.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "absl/strings/str_format.h"
 #include "dawn/native/Adapter.h"
 #include "dawn/native/Device.h"
+#include "dawn/native/DeviceGuard.h"
 #include "dawn/native/ObjectLabel.h"
 #include "dawn/native/ObjectType_autogen.h"
 #include "dawn/native/Toggles.h"
@@ -173,6 +175,12 @@ ApiObjectBase::~ApiObjectBase() {
 }
 
 void ApiObjectBase::APISetLabel(StringView label) {
+    // TODO(crbug.com/479457809): remove this once all backends' SetLabelImpl() implementations are
+    // thread safe. We only need the device guard to protect the backend's label.
+    std::optional<DeviceGuard> deviceGuard;
+    if (GetDevice()->IsToggleEnabled(Toggle::UseUserDefinedLabelsInBackend)) {
+        deviceGuard.emplace(GetDevice()->GetGuard());
+    }
     SetLabel(std::string(utils::NormalizeMessageString(label)));
 }
 
@@ -195,9 +203,6 @@ void ApiObjectBase::SetLabel(std::string label) {
         return;
     }
 
-    // TODO(479457809): remove this once all backends' SetLabelImpl() implementations are thread
-    // safe
-    auto deviceGuard = GetDevice()->GetGuard();
     SetLabelImpl();
 }
 
