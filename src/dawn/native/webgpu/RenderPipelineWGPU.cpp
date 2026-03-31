@@ -71,8 +71,9 @@ MaybeError RenderPipeline::InitializeImpl() {
     PerColorAttachment<WGPUColorTargetStateExpandResolveTextureDawn>
         colorTargetStateExpandResolveTextureDawnExtensions = {};
 
+    std::string label = GetLabel();
     desc.nextInChain = nullptr;
-    desc.label = ToOutputStringView(GetLabel());
+    desc.label = ToOutputStringView(label);
     auto layout = GetLayout();
     DAWN_ASSERT(layout != nullptr);
     desc.layout = ToBackend(layout)->GetInnerHandle();

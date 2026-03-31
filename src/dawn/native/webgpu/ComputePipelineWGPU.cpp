@@ -56,9 +56,10 @@ ComputePipeline::ComputePipeline(Device* device,
       ObjectWGPU(device->wgpu->computePipelineRelease) {}
 
 ResultOrError<Extent3D> ComputePipeline::InitializeImpl() {
+    std::string label = GetLabel();
     WGPUComputePipelineDescriptor desc;
     desc.nextInChain = nullptr;
-    desc.label = ToOutputStringView(GetLabel());
+    desc.label = ToOutputStringView(label);
     const PipelineLayoutBase* layout = GetLayout();
     DAWN_ASSERT(layout != nullptr);
     desc.layout = ToBackend(layout)->GetInnerHandle();

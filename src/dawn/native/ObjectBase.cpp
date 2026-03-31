@@ -27,14 +27,13 @@
 
 #include "dawn/native/ObjectBase.h"
 
-#include <atomic>
-#include <mutex>
 #include <utility>
 #include <vector>
 
 #include "absl/strings/str_format.h"
 #include "dawn/native/Adapter.h"
 #include "dawn/native/Device.h"
+#include "dawn/native/ObjectLabel.h"
 #include "dawn/native/ObjectType_autogen.h"
 #include "dawn/native/utils/WGPUHelpers.h"
 
@@ -146,23 +145,30 @@ void ApiObjectList::Destroy(DestroyReason reason) {
 }
 
 ApiObjectBase::ApiObjectBase(DeviceBase* device, StringView label) : ObjectBase(device) {
-    mLabel = std::string(label);
+    if (!label.IsUndefined()) {
+        SetLabel(std::string(label));
+    }
 }
 
 ApiObjectBase::ApiObjectBase(DeviceBase* device, ErrorTag tag, StringView label)
     : ObjectBase(device, tag) {
-    mLabel = std::string(label);
+    if (!label.IsUndefined()) {
+        SetLabel(std::string(label));
+    }
 }
 
 ApiObjectBase::ApiObjectBase(DeviceBase* device, DelayedInitializationTag tag, StringView label)
     : ObjectBase(device, tag) {
-    mLabel = std::string(label);
+    if (!label.IsUndefined()) {
+        SetLabel(std::string(label));
+    }
 }
 
 ApiObjectBase::ApiObjectBase(DeviceBase* device, LabelNotImplementedTag tag) : ObjectBase(device) {}
 
 ApiObjectBase::~ApiObjectBase() {
     DAWN_ASSERT(!IsAlive());
+    delete mLabel.load(std::memory_order_acquire);
 }
 
 void ApiObjectBase::APISetLabel(StringView label) {
@@ -170,18 +176,35 @@ void ApiObjectBase::APISetLabel(StringView label) {
 }
 
 void ApiObjectBase::SetLabel(std::string label) {
-    mLabel = std::move(label);
+    auto* labelObj = mLabel.load(std::memory_order_acquire);
+    if (labelObj == nullptr) {
+        auto* newLabel = new ObjectLabel();
+        ObjectLabel* expected = nullptr;
+        if (mLabel.compare_exchange_strong(expected, newLabel, std::memory_order_acq_rel,
+                                           std::memory_order_acquire)) {
+            labelObj = newLabel;
+        } else {
+            delete newLabel;
+            labelObj = expected;
+        }
+    }
+    labelObj->SetValue(std::move(label));
     SetLabelImpl();
 }
 
-const std::string& ApiObjectBase::GetLabel() const {
-    return mLabel;
+std::string ApiObjectBase::GetLabel() const {
+    auto* label = mLabel.load(std::memory_order_acquire);
+    if (label == nullptr) {
+        return "";
+    }
+    return label->GetValue();
 }
 
 void ApiObjectBase::FormatLabel(absl::FormatSink* s) const {
     s->Append(ObjectTypeAsString(GetType()));
-    if (!mLabel.empty()) {
-        s->Append(absl::StrFormat(" \"%s\"", mLabel));
+    const std::string& label = GetLabel();
+    if (!label.empty()) {
+        s->Append(absl::StrFormat(" \"%s\"", label));
     } else {
         s->Append(" (unlabeled)");
     }

@@ -76,9 +76,10 @@ Texture::Texture(Device* device, const UnpackedPtr<TextureDescriptor>& descripto
         viewFormats.push_back(ToAPI(device->GetValidInternalFormat(i).format));
     }
 
+    std::string label = GetLabel();
     WGPUTextureDescriptor desc = {
         .nextInChain = nullptr,
-        .label = ToOutputStringView(GetLabel()),
+        .label = ToOutputStringView(label),
         .usage = ToAPI(actualUsage),
         .dimension = ToAPI(GetDimension()),
         .size = ToWGPU(GetBaseSize()),
