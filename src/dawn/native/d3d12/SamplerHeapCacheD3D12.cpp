@@ -119,8 +119,14 @@ ResultOrError<Ref<SamplerHeapCacheEntry>> SamplerHeapCache::GetOrCreate(const Bi
     samplers.reserve(samplerCount);
 
     for (BindingIndex bindingIndex : bgl->GetSamplerIndices()) {
-        samplers.push_back(ToBackend(group->GetBindingAsSampler(bindingIndex)));
+        // GetSamplerIndices() returns indices for all samplers, including non-visible ones,
+        // so we must skip them.
+        if (bgl->GetBindingInfo(bindingIndex).visibility != wgpu::ShaderStage::None) {
+            samplers.push_back(ToBackend(group->GetBindingAsSampler(bindingIndex)));
+        }
     }
+    // All visible samplers should have been added
+    DAWN_ASSERT(samplers.size() == samplerCount);
 
     // Check the cache if there exists a sampler heap allocation that corresponds to the
     // samplers.

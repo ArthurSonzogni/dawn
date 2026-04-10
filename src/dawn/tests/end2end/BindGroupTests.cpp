@@ -2016,7 +2016,10 @@ TEST_P(BindGroupTests, OverwritingLowerIndexBG) {
 // contain any BindGroups. (causing later issues when trying to use the slab allocator).
 void DoMaxBindingsPerBindGroupTest(const wgpu::Device& device,
                                    const wgpu::BindGroupLayoutEntry& bglEntry,
-                                   const wgpu::BindGroupEntry& bgEntry) {
+                                   const wgpu::BindGroupEntry& bgEntry,
+                                   // Optional: allows testing with one entry as visible because
+                                   // some code paths are skipped when all entries are non-visible.
+                                   const wgpu::BindGroupLayoutEntry* firstBglEntry = nullptr) {
     // Create the bindgroup/layout with maxBindingsPerBindGroup of the same entry.
     std::vector<wgpu::BindGroupLayoutEntry> bglEntries;
     std::vector<wgpu::BindGroupEntry> bgEntries;
@@ -2024,7 +2027,11 @@ void DoMaxBindingsPerBindGroupTest(const wgpu::Device& device,
     bgEntries.reserve(kMaxBindingsPerBindGroup);
 
     for (uint32_t i = 0; i < kMaxBindingsPerBindGroup; i++) {
-        bglEntries.push_back(bglEntry);
+        if (firstBglEntry && i == 0) {
+            bglEntries.push_back(*firstBglEntry);
+        } else {
+            bglEntries.push_back(bglEntry);
+        }
         bglEntries.back().binding = i;
 
         bgEntries.push_back(bgEntry);
@@ -2070,7 +2077,7 @@ void DoMaxBindingsPerBindGroupTest(const wgpu::Device& device,
 }
 
 // Test with storage buffers as buffers take the most space in the frontend BindGroup.
-TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibilityNone_StorageBuffer) {
+TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibility_StorageBuffer) {
     // TODO(https://issues.chromium.org/491082532): Fails on OpenGL, likely because the buffers with
     // visibility none are still being bound in the GL backend, causing a GL_INVALID_VALUE because
     // the index is too large in glBindBufferRange.
@@ -2085,6 +2092,9 @@ TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibilityNone_StorageBuffer) {
             },
     };
 
+    auto bglEntryVisible = bglEntry;
+    bglEntryVisible.visibility = wgpu::ShaderStage::Compute;
+
     wgpu::BufferDescriptor bufDesc = {
         .usage = wgpu::BufferUsage::Uniform,
         .size = 4,
@@ -2092,10 +2102,13 @@ TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibilityNone_StorageBuffer) {
     wgpu::Buffer buf = device.CreateBuffer(&bufDesc);
     wgpu::BindGroupEntry bgEntry = {.binding = 0, .buffer = buf};
 
-    DoMaxBindingsPerBindGroupTest(device, bglEntry, bgEntry);
+    for (auto oneVisible : {false, true}) {
+        DoMaxBindingsPerBindGroupTest(device, bglEntry, bgEntry,
+                                      oneVisible ? &bglEntryVisible : nullptr);
+    }
 }
 // Test with external textures as they expand to take multiple entries in the frontend bindgroup.
-TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibilityNone_ExternalTexture) {
+TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibility_ExternalTexture) {
     // TODO(https://issues.chromium.org/491082532): Fails on OpenGL, likely because the buffers with
     // visibility none are still being bound in the GL backend, causing a GL_INVALID_VALUE because
     // the index is too large in glBindBufferRange.
@@ -2108,6 +2121,9 @@ TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibilityNone_ExternalTexture) {
         .visibility = wgpu::ShaderStage::None,
     };
 
+    auto bglEntryVisible = bglEntry;
+    bglEntryVisible.visibility = wgpu::ShaderStage::Compute;
+
     wgpu::TextureDescriptor tDesc = {
         .usage = wgpu::TextureUsage::TextureBinding,
         .size = {1, 1},
@@ -2117,10 +2133,13 @@ TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibilityNone_ExternalTexture) {
     wgpu::BindGroupEntry bgEntry = {.binding = 0,
                                     .textureView = textureForExternalTextureBinding.CreateView()};
 
-    DoMaxBindingsPerBindGroupTest(device, bglEntry, bgEntry);
+    for (auto oneVisible : {false, true}) {
+        DoMaxBindingsPerBindGroupTest(device, bglEntry, bgEntry,
+                                      oneVisible ? &bglEntryVisible : nullptr);
+    }
 }
 // Test with samplers as they have special handling in D3D12
-TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibilityNone_Sampler) {
+TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibility_Sampler) {
     wgpu::BindGroupLayoutEntry bglEntry = {
         .binding = 0,
         .visibility = wgpu::ShaderStage::None,
@@ -2130,9 +2149,15 @@ TEST_P(BindGroupTests, MaxBindingsPerBindGroupVisibilityNone_Sampler) {
             },
     };
 
+    auto bglEntryVisible = bglEntry;
+    bglEntryVisible.visibility = wgpu::ShaderStage::Compute;
+
     wgpu::BindGroupEntry bgEntry = {.binding = 0, .sampler = device.CreateSampler()};
 
-    DoMaxBindingsPerBindGroupTest(device, bglEntry, bgEntry);
+    for (auto oneVisible : {false, true}) {
+        DoMaxBindingsPerBindGroupTest(device, bglEntry, bgEntry,
+                                      oneVisible ? &bglEntryVisible : nullptr);
+    }
 }
 
 DAWN_INSTANTIATE_TEST(BindGroupTests,
