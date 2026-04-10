@@ -1052,14 +1052,13 @@ ResultOrError<GPUUsableBuffer::Storage*> GPUUsableBuffer::GetOrCreateStorage(
             bufferDescriptor.MiscFlags = 0;
             break;
         case StorageType::CPUWritableNonConstantBuffer: {
-            auto nonUniformUsage = GetInternalUsage() & ~wgpu::BufferUsage::Uniform;
-            // Try to unify CPU and GPU writable storages if possible.
-            if (CanMappableUseDefaultStorage(device, nonUniformUsage)) {
-                return AliasToMappableAndGPUWritableStorage();
-            }
             // Need to exclude GPU writable usages because CPU writable buffer is not GPU writable
-            // in D3D11 if we cannot use MapOnDefaultBuffers feature.
-            nonUniformUsage = nonUniformUsage & ~kD3D11GPUWriteUsages;
+            // in D3D11.
+            // TODO(crbug.com/479047477): We don't use MappableAndGPUWritable storage since
+            // D3D11_USAGE_DYNAMIC seems to have better CPU write performance than
+            // D3D11_USAGE_DEFAULT even on UMA devices.
+            const auto nonUniformUsage =
+                GetInternalUsage() & ~(wgpu::BufferUsage::Uniform | kD3D11GPUWriteUsages);
             bufferDescriptor.Usage = D3D11_USAGE_DYNAMIC;
             bufferDescriptor.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
             bufferDescriptor.BindFlags = D3D11BufferBindFlags(nonUniformUsage);
