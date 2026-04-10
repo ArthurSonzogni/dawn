@@ -183,7 +183,7 @@ class ExecutionQueueBase : public ApiObjectBase {
 
     void UpdateCompletedSerialToInternal(QueuePriority priority,
                                          ExecutionSerial completedSerial,
-                                         bool forceTasks = false);
+                                         bool forceTasksForDestroy = false);
 
     // |mCompletedSerial| tracks the last completed command serial that the fence has returned.
     // |mLastSubmittedSerial| tracks the last submitted command serial.
