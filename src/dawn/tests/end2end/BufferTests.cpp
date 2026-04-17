@@ -970,10 +970,13 @@ TEST_P(BufferMappedAtCreationTests, MapReadUsageSmall) {
 // Test that the simplest mappedAtCreation works for non-mappable buffers.
 TEST_P(BufferMappedAtCreationTests, NonMappableUsageSmall) {
     uint32_t myData = 4239;
-    wgpu::Buffer buffer = BufferMappedAtCreationWithData(wgpu::BufferUsage::CopySrc, {myData});
-    UnmapBuffer(buffer);
-
-    EXPECT_BUFFER_U32_EQ(myData, buffer, 0);
+    // Test with and without Uniform which may add additional padding at the end of the buffer.
+    for (wgpu::BufferUsage extraUsage : {{}, wgpu::BufferUsage::Uniform}) {
+        wgpu::Buffer buffer =
+            BufferMappedAtCreationWithData(wgpu::BufferUsage::CopySrc | extraUsage, {myData});
+        UnmapBuffer(buffer);
+        EXPECT_BUFFER_U32_EQ(myData, buffer, 0);
+    }
 }
 
 // Test mappedAtCreation for a large MapWrite buffer

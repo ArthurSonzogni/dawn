@@ -205,7 +205,7 @@ bool Buffer::IsCPUWritableAtCreation() const {
 MaybeError Buffer::MapAtCreationImpl() {
     auto device = ToBackend(GetDevice());
     if (device->IsToggleEnabled(Toggle::GLDefer)) {
-        mCPUStaging.resize(GetSize());
+        mCPUStaging.resize(GetAllocatedSize());
         mMappedData = mCPUStaging.data();
         return {};
     }
@@ -213,7 +213,7 @@ MaybeError Buffer::MapAtCreationImpl() {
         ExecutionQueueBase::SubmitMode::Normal, [this](const OpenGLFunctions& gl) -> MaybeError {
             DAWN_GL_TRY(gl, BindBuffer(GL_ARRAY_BUFFER, mBuffer));
             mMappedData = DAWN_GL_TRY_ALWAYS_CHECK(
-                gl, MapBufferRange(GL_ARRAY_BUFFER, 0, GetSize(), GL_MAP_WRITE_BIT));
+                gl, MapBufferRange(GL_ARRAY_BUFFER, 0, GetAllocatedSize(), GL_MAP_WRITE_BIT));
             return {};
         });
 }
