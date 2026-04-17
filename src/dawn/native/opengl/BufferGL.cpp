@@ -202,7 +202,7 @@ MaybeError Buffer::MapAtCreationImpl() {
     const OpenGLFunctions& gl = ToBackend(GetDevice())->GetGL();
     DAWN_GL_TRY(gl, BindBuffer(GL_ARRAY_BUFFER, mBuffer));
     mMappedData = DAWN_GL_TRY_ALWAYS_CHECK(
-        gl, MapBufferRange(GL_ARRAY_BUFFER, 0, GetSize(), GL_MAP_WRITE_BIT));
+        gl, MapBufferRange(GL_ARRAY_BUFFER, 0, GetAllocatedSize(), GL_MAP_WRITE_BIT));
     return {};
 }
 
