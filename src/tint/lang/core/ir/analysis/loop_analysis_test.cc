@@ -262,6 +262,16 @@ INSTANTIATE_TEST_SUITE_P(,
 
                              // Comparing the index to a constant that is at a limit can result in
                              // an always-true or always-false result, which is not OK.
+                             Bound<i32, Index, kLessThan, INT32_MIN>(false),
+                             Bound<u32, Index, kLessThan, 0>(false),
+                             Bound<i32, INT32_MAX, kLessThan, Index>(false),
+                             Bound<u32, UINT32_MAX, kLessThan, Index>(false),
+
+                             Bound<i32, Index, kGreaterThan, INT32_MAX>(false),
+                             Bound<u32, Index, kGreaterThan, UINT32_MAX>(false),
+                             Bound<i32, INT32_MIN, kGreaterThan, Index>(false),
+                             Bound<u32, 0, kGreaterThan, Index>(false),
+
                              Bound<i32, Index, kLessThanEqual, INT32_MAX>(false),
                              Bound<u32, Index, kLessThanEqual, UINT32_MAX>(false),
                              Bound<i32, INT32_MIN, kLessThanEqual, Index>(false),
@@ -272,9 +282,26 @@ INSTANTIATE_TEST_SUITE_P(,
                              Bound<i32, INT32_MAX, kGreaterThanEqual, Index>(false),
                              Bound<u32, UINT32_MAX, kGreaterThanEqual, Index>(false),
 
-                             // Using other immutable values for the bound is not OK for some
-                             // comparison operators, since that value could result in an
-                             // always-true or always-false outcome (as above).
+                             // Using other immutable values for the bound is not OK since that
+                             // value could result in an always-true or always-false outcome.
+                             Bound<i32, Index, kLessThan, kFunctionParam>(false),
+                             Bound<i32, Index, kLessThan, kLet>(false),
+                             Bound<i32, kFunctionParam, kLessThan, Index>(false),
+                             Bound<i32, kLet, kLessThan, Index>(false),
+                             Bound<u32, Index, kLessThan, kFunctionParam>(false),
+                             Bound<u32, Index, kLessThan, kLet>(false),
+                             Bound<u32, kFunctionParam, kLessThan, Index>(false),
+                             Bound<u32, kLet, kLessThan, Index>(false),
+
+                             Bound<i32, Index, kGreaterThan, kFunctionParam>(false),
+                             Bound<i32, Index, kGreaterThan, kLet>(false),
+                             Bound<i32, kFunctionParam, kGreaterThan, Index>(false),
+                             Bound<i32, kLet, kGreaterThan, Index>(false),
+                             Bound<u32, Index, kGreaterThan, kFunctionParam>(false),
+                             Bound<u32, Index, kGreaterThan, kLet>(false),
+                             Bound<u32, kFunctionParam, kGreaterThan, Index>(false),
+                             Bound<u32, kLet, kGreaterThan, Index>(false),
+
                              Bound<i32, Index, kLessThanEqual, kFunctionParam>(false),
                              Bound<i32, Index, kLessThanEqual, kLet>(false),
                              Bound<i32, kFunctionParam, kLessThanEqual, Index>(false),

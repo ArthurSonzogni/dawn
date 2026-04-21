@@ -110,8 +110,12 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index) {
   uint RowPerThreadB = 4u;
   uint tileRowB = (local_id.y * RowPerThreadB);
   {
+    uint2 tint_loop_idx = (4294967295u).xx;
     uint t = 0u;
     while(true) {
+      if (all((tint_loop_idx == (0u).xx))) {
+        break;
+      }
       if ((t < numTiles)) {
       } else {
         break;
@@ -124,8 +128,12 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index) {
             break;
           }
           {
+            uint2 tint_loop_idx_1 = (4294967295u).xx;
             uint innerCol = 0u;
             while(true) {
+              if (all((tint_loop_idx_1 == (0u).xx))) {
+                break;
+              }
               if ((innerCol < ColPerThreadA)) {
               } else {
                 break;
@@ -134,6 +142,10 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index) {
               uint inputCol = (tileColA + innerCol);
               mm_Asub[inputRow][min(inputCol, 63u)] = mm_readA((globalRow + innerRow), ((t * 64u) + inputCol));
               {
+                uint tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
                 innerCol = (innerCol + 1u);
               }
               continue;
@@ -146,8 +158,12 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index) {
         }
       }
       {
+        uint2 tint_loop_idx_2 = (4294967295u).xx;
         uint innerRow = 0u;
         while(true) {
+          if (all((tint_loop_idx_2 == (0u).xx))) {
+            break;
+          }
           if ((innerRow < RowPerThreadB)) {
           } else {
             break;
@@ -170,6 +186,10 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index) {
             }
           }
           {
+            uint tint_low_inc_2 = (tint_loop_idx_2.x - 1u);
+            tint_loop_idx_2.x = tint_low_inc_2;
+            uint tint_carry_2 = uint((tint_low_inc_2 == 4294967295u));
+            tint_loop_idx_2.y = (tint_loop_idx_2.y - tint_carry_2);
             innerRow = (innerRow + 1u);
           }
           continue;
@@ -242,6 +262,10 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index) {
       }
       GroupMemoryBarrierWithGroupSync();
       {
+        uint tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
         t = (t + 1u);
       }
       continue;
