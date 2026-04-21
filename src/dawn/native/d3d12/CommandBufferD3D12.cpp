@@ -1015,7 +1015,13 @@ MaybeError CommandBuffer::RecordCommands(CommandRecordingContext* commandContext
                     commandContext, GetResourceUsages().renderPasses[nextRenderPassNumber],
                     &passHasUAV));
 
-                LazyClearRenderPassAttachments(device, beginRenderPassCmd);
+                DAWN_TRY(LazyClearRenderPassAttachments(
+                    device, beginRenderPassCmd,
+                    [&](TextureBase* texture, const SubresourceRange& range) {
+                        return ToBackend(texture)->EnsureSubresourceContentInitialized(
+                            commandContext, range);
+                    }));
+
                 DAWN_TRY(RecordRenderPass(commandContext,
                                           descriptorHeapState.GetGraphicsBindingTracker(),
                                           beginRenderPassCmd, passHasUAV));

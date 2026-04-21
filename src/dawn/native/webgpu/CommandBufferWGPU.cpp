@@ -999,7 +999,7 @@ MaybeError CommandBuffer::CaptureCreationParameters(CaptureContext& captureConte
     return {};
 }
 
-WGPUCommandBuffer CommandBuffer::Encode() {
+ResultOrError<WGPUCommandBuffer> CommandBuffer::Encode() {
     auto& wgpu = ToBackend(GetDevice())->wgpu.get();
 
     // TODO(crbug.com/413053623): Use stored command encoder descriptor
@@ -1028,8 +1028,16 @@ WGPUCommandBuffer CommandBuffer::Encode() {
                 PrepareResourcesForSyncScope(
                     GetResourceUsages().renderPasses[nextRenderPassNumber]);
 
-                LazyClearRenderPassAttachments(GetDevice(), cmd);
+                DAWN_TRY(LazyClearRenderPassAttachments(
+                    GetDevice(), cmd,
+                    [](TextureBase* texture, const SubresourceRange& range) -> MaybeError {
+                        // The WGPU backend doesn't clear directly, it relies on the the inner
+                        // device so we just mark the subresource as initialized.
+                        ToBackend(texture)->SetIsSubresourceContentInitialized(true, range);
+                        return {};
+                    }));
                 EncodeRenderPass(ToBackend(GetDevice()), innerEncoder, mCommands, cmd);
+
                 ++nextRenderPassNumber;
                 break;
             }

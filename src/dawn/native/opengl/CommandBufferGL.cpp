@@ -813,7 +813,10 @@ MaybeError CommandBuffer::Execute(const OpenGLFunctions& gl) {
                 }
                 DAWN_TRY(
                     LazyClearSyncScope(GetResourceUsages().renderPasses[nextRenderPassNumber]));
-                LazyClearRenderPassAttachments(GetDevice(), cmd);
+                DAWN_TRY(LazyClearRenderPassAttachments(
+                    GetDevice(), cmd, [&](TextureBase* texture, const SubresourceRange& range) {
+                        return ToBackend(texture)->EnsureSubresourceContentInitialized(gl, range);
+                    }));
                 DAWN_TRY(ExecuteRenderPass(cmd, gl));
 
                 nextRenderPassNumber++;

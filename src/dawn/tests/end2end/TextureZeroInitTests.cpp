@@ -33,6 +33,7 @@
 #include "dawn/utils/ComboRenderPipelineDescriptor.h"
 #include "dawn/utils/TestUtils.h"
 #include "dawn/utils/WGPUHelpers.h"
+#include "webgpu/webgpu_cpp.h"
 
 namespace dawn {
 namespace {
@@ -1160,6 +1161,176 @@ TEST_P(TextureZeroInitTest, RenderPassRenderable3DTextureClear) {
     DoRenderableSampledTextureClearTest(
         wgpu::TextureDimension::e3D,
         wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment);
+}
+
+// This is a regression test for a bug where rendering to a single slice of a 3D texture
+// would mark the entire mip level as initialized, skipping lazy clears for other slices.
+// This test renders to a single slice of a 3d texture and then reads it back via
+// CopyTextureToBuffer.
+TEST_P(TextureZeroInitTest, RenderPass3DTextureDepthSliceClearTestViaCopy) {
+    constexpr uint32_t kNumSlices = 3;
+    for (uint32_t slice = 0; slice < kNumSlices; ++slice) {
+        wgpu::TextureDescriptor desc;
+        desc.dimension = wgpu::TextureDimension::e3D;
+        desc.size = {kSize, kSize, kNumSlices};
+        desc.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc;
+        desc.format = kColorFormat;
+
+        wgpu::Texture texture = device.CreateTexture(&desc);
+
+        // Create a view of the 3D texture.
+        wgpu::TextureViewDescriptor viewDesc;
+        viewDesc.dimension = wgpu::TextureViewDimension::e3D;
+        wgpu::TextureView view = texture.CreateView(&viewDesc);
+
+        // Render to slice at index |slice|
+        {
+            utils::ComboRenderPassDescriptor renderPassDesc({view});
+            renderPassDesc.cColorAttachments[0].depthSlice = slice;
+            renderPassDesc.cColorAttachments[0].loadOp = wgpu::LoadOp::Clear;
+            renderPassDesc.cColorAttachments[0].clearValue = {0.502, 0.502, 0.502, 0.502};
+
+            wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+            wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
+            pass.End();
+            wgpu::CommandBuffer commands = encoder.Finish();
+            queue.Submit(1, &commands);
+        }
+
+        std::vector<utils::RGBA8> expectedZeros(kSize * kSize, utils::RGBA8::kZero);
+        std::vector<utils::RGBA8> expectedCleared(kSize * kSize, {128, 128, 128, 128});
+
+        std::vector<const std::vector<utils::RGBA8>*> expectedSlices(kNumSlices, &expectedZeros);
+        expectedSlices[slice] = &expectedCleared;
+
+        for (uint32_t i = 0; i < kNumSlices; ++i) {
+            EXPECT_TEXTURE_EQ(expectedSlices[i]->data(), texture, {0, 0, i}, {kSize, kSize})
+                << "Slice " << i << " did not match expected values.";
+        }
+    }
+}
+
+// This is a regression test for a bug where rendering to a single slice of a 3D texture
+// would mark the entire mip level as initialized, skipping lazy clears for other slices.
+// This test renders to a single slice of a 3d texture and then reads it back by rendering the 3D
+// texture to a 2D array render target and sampling it in a shader.
+TEST_P(TextureZeroInitTest, RenderPass3DTextureDepthSliceClearTestViaUsage) {
+    constexpr uint32_t kNumSlices = 3;
+    for (uint32_t slice = 0; slice < kNumSlices; ++slice) {
+        wgpu::TextureDescriptor desc;
+        desc.dimension = wgpu::TextureDimension::e3D;
+        desc.size = {kSize, kSize, kNumSlices};
+        desc.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding;
+        desc.format = kColorFormat;
+
+        wgpu::Texture texture = device.CreateTexture(&desc);
+
+        // Create a view of the 3D texture.
+        wgpu::TextureViewDescriptor viewDesc;
+        viewDesc.dimension = wgpu::TextureViewDimension::e3D;
+        wgpu::TextureView view = texture.CreateView(&viewDesc);
+
+        wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+
+        // Render to slice at index |slice|
+        {
+            utils::ComboRenderPassDescriptor renderPassDesc({view});
+            renderPassDesc.cColorAttachments[0].depthSlice = slice;
+            renderPassDesc.cColorAttachments[0].loadOp = wgpu::LoadOp::Clear;
+            renderPassDesc.cColorAttachments[0].clearValue = {0.502, 0.502, 0.502, 0.502};
+
+            wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
+            pass.End();
+        }
+
+        wgpu::TextureDescriptor rtDesc;
+        rtDesc.dimension = wgpu::TextureDimension::e2D;
+        rtDesc.size = {kSize, kSize, 3};
+        rtDesc.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc;
+        rtDesc.format = kColorFormat;
+        wgpu::Texture renderTarget = device.CreateTexture(&rtDesc);
+
+        // Render the 3D slices to a 2D-array texture
+        {
+            // Make a single full clips space triangle vertex shader and a fragment shader that will
+            // use the current fragment position to sample the 3d texture.
+            wgpu::ShaderModule mod = utils::CreateShaderModule(device, R"(
+                @vertex fn vs(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {
+                    var pos = array(
+                        vec2<f32>(-1.0, -1.0),
+                        vec2<f32>(3.0, -1.0),
+                        vec2<f32>(-1.0, 3.0));
+                    return vec4f(pos[VertexIndex], 0.0, 1.0);
+                }
+
+                @group(0) @binding(0) var t : texture_3d<f32>;
+
+                struct FragmentOutput {
+                    @location(0) color0 : vec4f,
+                    @location(1) color1 : vec4f,
+                    @location(2) color2 : vec4f,
+                };
+
+                @fragment fn fs(@builtin(position) position : vec4f) -> FragmentOutput {
+                    let xy = vec2u(position.xy);
+                    return FragmentOutput(
+                        textureLoad(t, vec3u(xy, 0), 0),
+                        textureLoad(t, vec3u(xy, 1), 0),
+                        textureLoad(t, vec3u(xy, 2), 0),
+                    );
+                }
+            )");
+
+            utils::ComboRenderPipelineDescriptor renderPipelineDescriptor;
+            renderPipelineDescriptor.cTargets[0].format = kColorFormat;
+            renderPipelineDescriptor.cTargets[1].format = kColorFormat;
+            renderPipelineDescriptor.cTargets[2].format = kColorFormat;
+            renderPipelineDescriptor.vertex.module = mod;
+            renderPipelineDescriptor.cFragment.module = mod;
+            renderPipelineDescriptor.cFragment.targetCount = kNumSlices;
+            wgpu::RenderPipeline renderPipeline =
+                device.CreateRenderPipeline(&renderPipelineDescriptor);
+
+            wgpu::BindGroup bindGroup = utils::MakeBindGroup(
+                device, renderPipeline.GetBindGroupLayout(0), {{0, texture.CreateView()}});
+
+            std::vector<wgpu::TextureView> renderTargets;
+            for (uint32_t i = 0; i < kNumSlices; ++i) {
+                wgpu::TextureViewDescriptor viewDesc{
+                    .dimension = wgpu::TextureViewDimension::e2DArray,
+                    .baseArrayLayer = i,
+                    .arrayLayerCount = 1,
+                };
+                renderTargets.push_back(renderTarget.CreateView(&viewDesc));
+            }
+            utils::ComboRenderPassDescriptor renderPassDesc(renderTargets);
+            for (uint32_t i = 0; i < kNumSlices; ++i) {
+                // Clear to something completely unexpected.
+                renderPassDesc.cColorAttachments[i].clearValue = {0.25, 0.25, 0.25, 0.25};
+                renderPassDesc.cColorAttachments[i].loadOp = wgpu::LoadOp::Clear;
+            }
+
+            wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
+            pass.SetPipeline(renderPipeline);
+            pass.SetBindGroup(0, bindGroup);
+            pass.Draw(3);
+            pass.End();
+        }
+
+        wgpu::CommandBuffer commands = encoder.Finish();
+        queue.Submit(1, &commands);
+
+        std::vector<utils::RGBA8> expectedZeros(kSize * kSize, utils::RGBA8::kZero);
+        std::vector<utils::RGBA8> expectedCleared(kSize * kSize, {128, 128, 128, 128});
+
+        std::vector<const std::vector<utils::RGBA8>*> expectedSlices(kNumSlices, &expectedZeros);
+        expectedSlices[slice] = &expectedCleared;
+
+        for (uint32_t i = 0; i < kNumSlices; ++i) {
+            EXPECT_TEXTURE_EQ(expectedSlices[i]->data(), renderTarget, {0, 0, i}, {kSize, kSize})
+                << "Slice " << i << " did not match expected values.";
+        }
+    }
 }
 
 // This is a regression test for a bug where a texture wouldn't get clear for a pass if at least
