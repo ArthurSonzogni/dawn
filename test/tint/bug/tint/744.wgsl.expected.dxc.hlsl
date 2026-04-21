@@ -15,8 +15,12 @@ void main_inner(uint3 global_id) {
   uint dimOutter = uniforms[1u].y;
   uint result = 0u;
   {
+    uint2 tint_loop_idx = (4294967295u).xx;
     uint i = 0u;
     while(true) {
+      if (all((tint_loop_idx == (0u).xx))) {
+        break;
+      }
       if ((i < dimInner)) {
       } else {
         break;
@@ -29,6 +33,10 @@ void main_inner(uint3 global_id) {
       secondMatrix.GetDimensions(v_1);
       result = (result + (firstMatrix.Load((0u + (min(a, ((v / 4u) - 1u)) * 4u))) * secondMatrix.Load((0u + (min(b, ((v_1 / 4u) - 1u)) * 4u)))));
       {
+        uint tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
         i = (i + 1u);
       }
     }

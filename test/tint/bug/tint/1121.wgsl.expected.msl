@@ -92,15 +92,23 @@ void main_inner(uint3 GlobalInvocationID, tint_module_vars_struct tint_module_va
   int const TILE_COUNT_X = 2;
   int const TILE_COUNT_Y = 2;
   {
+    uint2 tint_loop_idx = uint2(4294967295u);
     int y = 0;
     while(true) {
+      if (all((tint_loop_idx == uint2(0u)))) {
+        break;
+      }
       if ((y < TILE_COUNT_Y)) {
       } else {
         break;
       }
       {
+        uint2 tint_loop_idx_1 = uint2(4294967295u);
         int x = 0;
         while(true) {
+          if (all((tint_loop_idx_1 == uint2(0u)))) {
+            break;
+          }
           if ((x < TILE_COUNT_X)) {
           } else {
             break;
@@ -158,6 +166,10 @@ void main_inner(uint3 GlobalInvocationID, tint_module_vars_struct tint_module_va
             }
             if (v_9) {
               {
+                uint const tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint const tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
                 x = as_type<int>((as_type<uint>(x) + as_type<uint>(1)));
               }
               continue;
@@ -165,6 +177,10 @@ void main_inner(uint3 GlobalInvocationID, tint_module_vars_struct tint_module_va
             uint offset = atomic_fetch_add_explicit((&(*tint_module_vars.tileLightId).data[min(tileId, 3u)].count), 1u, memory_order_relaxed);
             if ((offset >= (*tint_module_vars.config).numTileLightSlot)) {
               {
+                uint const tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint const tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
                 x = as_type<int>((as_type<uint>(x) + as_type<uint>(1)));
               }
               continue;
@@ -172,11 +188,19 @@ void main_inner(uint3 GlobalInvocationID, tint_module_vars_struct tint_module_va
             (*tint_module_vars.tileLightId).data[min(tileId, 3u)].lightId[min(offset, 63u)] = GlobalInvocationID.x;
           }
           {
+            uint const tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+            tint_loop_idx_1.x = tint_low_inc_1;
+            uint const tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+            tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
             x = as_type<int>((as_type<uint>(x) + as_type<uint>(1)));
           }
         }
       }
       {
+        uint const tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint const tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
         y = as_type<int>((as_type<uint>(y) + as_type<uint>(1)));
       }
     }

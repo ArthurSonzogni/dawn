@@ -80,15 +80,23 @@ void main_inner(uvec3 GlobalInvocationID) {
   int TILE_COUNT_X = 2;
   int TILE_COUNT_Y = 2;
   {
+    uvec2 tint_loop_idx = uvec2(4294967295u);
     int y = 0;
     while(true) {
+      if (all(equal(tint_loop_idx, uvec2(0u)))) {
+        break;
+      }
       if ((y < TILE_COUNT_Y)) {
       } else {
         break;
       }
       {
+        uvec2 tint_loop_idx_1 = uvec2(4294967295u);
         int x = 0;
         while(true) {
+          if (all(equal(tint_loop_idx_1, uvec2(0u)))) {
+            break;
+          }
           if ((x < TILE_COUNT_X)) {
           } else {
             break;
@@ -162,6 +170,10 @@ void main_inner(uvec3 GlobalInvocationID) {
             }
             if (v_42) {
               {
+                uint tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
                 uint v_44 = uint(x);
                 x = int((v_44 + uint(1)));
               }
@@ -172,6 +184,10 @@ void main_inner(uvec3 GlobalInvocationID) {
             uvec4 v_46 = v_1.inner[1u];
             if ((offset >= v_46.x)) {
               {
+                uint tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
                 uint v_44 = uint(x);
                 x = int((v_44 + uint(1)));
               }
@@ -182,12 +198,20 @@ void main_inner(uvec3 GlobalInvocationID) {
             v.inner.data[v_47].lightId[v_48] = GlobalInvocationID.x;
           }
           {
+            uint tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+            tint_loop_idx_1.x = tint_low_inc_1;
+            uint tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+            tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
             uint v_44 = uint(x);
             x = int((v_44 + uint(1)));
           }
         }
       }
       {
+        uint tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
         uint v_49 = uint(y);
         y = int((v_49 + uint(1)));
       }
