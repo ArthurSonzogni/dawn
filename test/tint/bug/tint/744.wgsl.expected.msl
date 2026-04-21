@@ -44,8 +44,12 @@ void main_inner(uint3 global_id, tint_module_vars_struct tint_module_vars) {
   uint const dimOutter = (*tint_module_vars.uniforms).outShape.y;
   uint result = 0u;
   {
+    uint2 tint_loop_idx = uint2(4294967295u);
     uint i = 0u;
     while(true) {
+      if (all((tint_loop_idx == uint2(0u)))) {
+        break;
+      }
       if ((i < dimInner)) {
       } else {
         break;
@@ -54,6 +58,10 @@ void main_inner(uint3 global_id, tint_module_vars_struct tint_module_vars) {
       uint const b = (resultCell.y + (i * dimOutter));
       result = (result + ((*tint_module_vars.firstMatrix).numbers[min(a, (v.tint_array_length_0_2 - 1u))] * (*tint_module_vars.secondMatrix).numbers[min(b, (v.tint_array_length_0_3 - 1u))]));
       {
+        uint const tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint const tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
         i = (i + 1u);
       }
     }

@@ -58,11 +58,27 @@ void main_inner(uint3 GlobalInvocationID) {
   int TILE_COUNT_X = int(2);
   int TILE_COUNT_Y = int(2);
   {
+    uint2 tint_loop_idx = (4294967295u).xx;
     int y = int(0);
-    for( ; (y < TILE_COUNT_Y); y = asint((asuint(y) + asuint(int(1))))) {
+    while(true) {
+      if (all((tint_loop_idx == (0u).xx))) {
+        break;
+      }
+      if ((y < TILE_COUNT_Y)) {
+      } else {
+        break;
+      }
       {
+        uint2 tint_loop_idx_1 = (4294967295u).xx;
         int x = int(0);
-        for( ; (x < TILE_COUNT_X); x = asint((asuint(x) + asuint(int(1))))) {
+        while(true) {
+          if (all((tint_loop_idx_1 == (0u).xx))) {
+            break;
+          }
+          if ((x < TILE_COUNT_X)) {
+          } else {
+            break;
+          }
           int2 tilePixel0Idx = int2(asint((asuint(x) * asuint(TILE_SIZE))), asint((asuint(y) * asuint(TILE_SIZE))));
           float2 v_13 = (2.0f * float2(tilePixel0Idx));
           float2 floorCoord = ((v_13 / asfloat(uniforms[10u]).xy) - (1.0f).xx);
@@ -114,17 +130,45 @@ void main_inner(uint3 GlobalInvocationID) {
               v_22 = (tileId >= config[0u].y);
             }
             if (v_22) {
+              {
+                uint tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
+                x = asint((asuint(x) + asuint(int(1))));
+              }
               continue;
             }
             uint v_23 = 0u;
             tileLightId.InterlockedAdd((0u + (min(tileId, 3u) * 260u)), 1u, v_23);
             uint offset = v_23;
             if ((offset >= config[1u].x)) {
+              {
+                uint tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
+                x = asint((asuint(x) + asuint(int(1))));
+              }
               continue;
             }
             tileLightId.Store(((4u + (min(tileId, 3u) * 260u)) + (min(offset, 63u) * 4u)), GlobalInvocationID.x);
           }
+          {
+            uint tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+            tint_loop_idx_1.x = tint_low_inc_1;
+            uint tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+            tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
+            x = asint((asuint(x) + asuint(int(1))));
+          }
         }
+      }
+      {
+        uint tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
+        y = asint((asuint(y) + asuint(int(1))));
       }
     }
   }

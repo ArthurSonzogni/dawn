@@ -24,8 +24,12 @@ void main_inner(uvec3 global_id) {
   uint dimOutter = v_2.y;
   uint result = 0u;
   {
+    uvec2 tint_loop_idx = uvec2(4294967295u);
     uint i = 0u;
     while(true) {
+      if (all(equal(tint_loop_idx, uvec2(0u)))) {
+        break;
+      }
       if ((i < dimInner)) {
       } else {
         break;
@@ -38,6 +42,10 @@ void main_inner(uvec3 global_id) {
       uint v_6 = min(b, (uint(secondMatrix.numbers.length()) - 1u));
       result = (v_3 + (v_5 * secondMatrix.numbers[v_6]));
       {
+        uint tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
         i = (i + 1u);
       }
     }

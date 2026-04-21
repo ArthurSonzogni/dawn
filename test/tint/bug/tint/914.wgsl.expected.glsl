@@ -116,8 +116,12 @@ void main_inner(uvec3 local_id, uvec3 global_id, uint tint_local_index) {
   uint RowPerThreadB = 4u;
   uint tileRowB = (local_id.y * RowPerThreadB);
   {
+    uvec2 tint_loop_idx = uvec2(4294967295u);
     uint t = 0u;
     while(true) {
+      if (all(equal(tint_loop_idx, uvec2(0u)))) {
+        break;
+      }
       if ((t < numTiles)) {
       } else {
         break;
@@ -130,8 +134,12 @@ void main_inner(uvec3 local_id, uvec3 global_id, uint tint_local_index) {
             break;
           }
           {
+            uvec2 tint_loop_idx_1 = uvec2(4294967295u);
             uint innerCol = 0u;
             while(true) {
+              if (all(equal(tint_loop_idx_1, uvec2(0u)))) {
+                break;
+              }
               if ((innerCol < ColPerThreadA)) {
               } else {
                 break;
@@ -140,6 +148,10 @@ void main_inner(uvec3 local_id, uvec3 global_id, uint tint_local_index) {
               uint inputCol = (tileColA + innerCol);
               mm_Asub[inputRow][min(inputCol, 63u)] = mm_readA((globalRow + innerRow), ((t * 64u) + inputCol));
               {
+                uint tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
                 innerCol = (innerCol + 1u);
               }
             }
@@ -150,8 +162,12 @@ void main_inner(uvec3 local_id, uvec3 global_id, uint tint_local_index) {
         }
       }
       {
+        uvec2 tint_loop_idx_2 = uvec2(4294967295u);
         uint innerRow = 0u;
         while(true) {
+          if (all(equal(tint_loop_idx_2, uvec2(0u)))) {
+            break;
+          }
           if ((innerRow < RowPerThreadB)) {
           } else {
             break;
@@ -173,6 +189,10 @@ void main_inner(uvec3 local_id, uvec3 global_id, uint tint_local_index) {
             }
           }
           {
+            uint tint_low_inc_2 = (tint_loop_idx_2.x - 1u);
+            tint_loop_idx_2.x = tint_low_inc_2;
+            uint tint_carry_2 = uint((tint_low_inc_2 == 4294967295u));
+            tint_loop_idx_2.y = (tint_loop_idx_2.y - tint_carry_2);
             innerRow = (innerRow + 1u);
           }
         }
@@ -240,6 +260,10 @@ void main_inner(uvec3 local_id, uvec3 global_id, uint tint_local_index) {
       }
       barrier();
       {
+        uint tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
         t = (t + 1u);
       }
     }

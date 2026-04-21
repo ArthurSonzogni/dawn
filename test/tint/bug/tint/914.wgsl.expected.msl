@@ -133,8 +133,12 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index, tint_mod
   uint const RowPerThreadB = 4u;
   uint const tileRowB = (local_id.y * RowPerThreadB);
   {
+    uint2 tint_loop_idx = uint2(4294967295u);
     uint t = 0u;
     while(true) {
+      if (all((tint_loop_idx == uint2(0u)))) {
+        break;
+      }
       if ((t < numTiles)) {
       } else {
         break;
@@ -147,8 +151,12 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index, tint_mod
             break;
           }
           {
+            uint2 tint_loop_idx_1 = uint2(4294967295u);
             uint innerCol = 0u;
             while(true) {
+              if (all((tint_loop_idx_1 == uint2(0u)))) {
+                break;
+              }
               if ((innerCol < ColPerThreadA)) {
               } else {
                 break;
@@ -157,6 +165,10 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index, tint_mod
               uint const inputCol = (tileColA + innerCol);
               (*tint_module_vars.mm_Asub)[inputRow][min(inputCol, 63u)] = mm_readA((globalRow + innerRow), ((t * 64u) + inputCol), v_5, tint_module_vars);
               {
+                uint const tint_low_inc_1 = (tint_loop_idx_1.x - 1u);
+                tint_loop_idx_1.x = tint_low_inc_1;
+                uint const tint_carry_1 = uint((tint_low_inc_1 == 4294967295u));
+                tint_loop_idx_1.y = (tint_loop_idx_1.y - tint_carry_1);
                 innerCol = (innerCol + 1u);
               }
             }
@@ -167,8 +179,12 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index, tint_mod
         }
       }
       {
+        uint2 tint_loop_idx_2 = uint2(4294967295u);
         uint innerRow = 0u;
         while(true) {
+          if (all((tint_loop_idx_2 == uint2(0u)))) {
+            break;
+          }
           if ((innerRow < RowPerThreadB)) {
           } else {
             break;
@@ -190,6 +206,10 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index, tint_mod
             }
           }
           {
+            uint const tint_low_inc_2 = (tint_loop_idx_2.x - 1u);
+            tint_loop_idx_2.x = tint_low_inc_2;
+            uint const tint_carry_2 = uint((tint_low_inc_2 == 4294967295u));
+            tint_loop_idx_2.y = (tint_loop_idx_2.y - tint_carry_2);
             innerRow = (innerRow + 1u);
           }
         }
@@ -249,6 +269,10 @@ void main_inner(uint3 local_id, uint3 global_id, uint tint_local_index, tint_mod
       }
       threadgroup_barrier(mem_flags::mem_threadgroup);
       {
+        uint const tint_low_inc = (tint_loop_idx.x - 1u);
+        tint_loop_idx.x = tint_low_inc;
+        uint const tint_carry = uint((tint_low_inc == 4294967295u));
+        tint_loop_idx.y = (tint_loop_idx.y - tint_carry);
         t = (t + 1u);
       }
     }
