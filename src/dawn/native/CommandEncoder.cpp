@@ -1097,13 +1097,6 @@ MaybeError EncodeTimestampsToNanosecondsConversion(CommandEncoder* encoder,
 
     DAWN_TRY(device->GetQueue()->WriteBuffer(paramsBuffer.Get(), 0, &params, sizeof(params)));
 
-    // In the internal shader to convert timestamps to nanoseconds, we can ensure no uninitialized
-    // data will be read and the full buffer range will be filled with valid data.
-    if (!destination->IsInitialized() &&
-        destination->IsFullBufferRange(firstQuery, sizeof(uint64_t) * queryCount)) {
-        destination->SetInitialized(true);
-    }
-
     return EncodeConvertTimestampsToNanoseconds(encoder, destination, availabilityBuffer.Get(),
                                                 paramsBuffer.Get());
 }
@@ -2223,7 +2216,8 @@ void CommandEncoder::APIResolveQuerySet(QuerySetBase* querySet,
             // Encode internal compute pipeline for timestamp query
             if (querySet->GetQueryType() == wgpu::QueryType::Timestamp &&
                 !GetDevice()->IsToggleEnabled(Toggle::DisableTimestampQueryConversion) &&
-                GetDevice()->GetTimestampPeriodInNS() != 1.0f) {
+                (GetDevice()->GetTimestampPeriodInNS() != 1.0f ||
+                 GetDevice()->IsToggleEnabled(Toggle::TimestampQueryConversionEvenIf1NS))) {
                 // The below function might create new resources. Need to lock the Device.
                 // TODO(crbug.com/dawn/1618): In future, all temp resources should be created at
                 // Command Submit time, so the locking would be removed from here at that point.

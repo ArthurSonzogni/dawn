@@ -85,6 +85,7 @@ enum class Toggle {
     FxcOptimizations,
     RecordDetailedTimingInTraceEvents,
     DisableTimestampQueryConversion,
+    TimestampQueryConversionEvenIf1NS,
     TimestampQuantization,
     ClearBufferBeforeResolveQueries,
     VulkanUseZeroInitializeWorkgroupMemoryExtension,

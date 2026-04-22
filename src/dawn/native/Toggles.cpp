@@ -265,6 +265,11 @@ static constexpr ToggleEnumAndInfoList kToggleNameAndInfoList = {{
      {"disable_timestamp_query_conversion",
       "Resolve timestamp queries into ticks instead of nanoseconds.", "https://crbug.com/dawn/1305",
       ToggleStage::Device}},
+    {Toggle::TimestampQueryConversionEvenIf1NS,
+     {"timestamp_query_conversion_even_if_1ns",
+      "Force timestamp query conversion to run even if it isn't needed (unless "
+      "disable_timestamp_query_conversion).",
+      "https://crbug.com/499211666", ToggleStage::Device}},
     {Toggle::TimestampQuantization,
      {"timestamp_quantization",
       "Enable timestamp queries quantization to reduce the precision of timers that can be created "
