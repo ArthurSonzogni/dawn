@@ -196,7 +196,12 @@ struct State {
         const core::type::Type* new_elem_type = nullptr;
         auto* vec = arr->ElemType()->As<core::type::Vector>();
         if (vec && vec->Width() == 3) {
-            new_elem_type = GetPackedVec3ArrayElementStruct(vec->Type());
+            // A vec3<bool> is always converted to a vec3<u32>
+            if (vec->Type()->Is<core::type::Bool>()) {
+                new_elem_type = GetPackedVec3ArrayElementStruct(ty.u32());
+            } else {
+                new_elem_type = GetPackedVec3ArrayElementStruct(vec->Type());
+            }
         } else {
             new_elem_type = RewriteType(arr->ElemType());
         }
