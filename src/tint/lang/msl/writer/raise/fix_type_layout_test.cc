@@ -4306,5 +4306,58 @@ $B1: {  # root
     EXPECT_EQ(expect, str());
 }
 
+// Test that an array<vec3<bool>> handles the `u32` conversion correctly.
+// https://crbug.com/505317119
+TEST_F(MslWriter_FixTypeLayoutTest, ArrayVec3Bool) {
+    auto* var = b.Var<workgroup, array<vec3<bool>, 1>>("v");
+    mod.root_block->Append(var);
+
+    auto* func = b.Function("foo", ty.void_());
+    b.Append(func->Block(), [&] {  //
+        auto* ptr = b.Access(ty.ptr(workgroup, ty.vec3<bool>(), read_write), var, 0_u);
+        b.LoadVectorElement(ptr, 0_u);
+        b.Return(func);
+    });
+
+    auto* src = R"(
+$B1: {  # root
+  %v:ptr<workgroup, array<vec3<bool>, 1>, read_write> = var undef
+}
+
+%foo = func():void {
+  $B2: {
+    %3:ptr<workgroup, vec3<bool>, read_write> = access %v, 0u
+    %4:bool = load_vector_element %3, 0u
+    ret
+  }
+}
+)";
+    EXPECT_EQ(src, str());
+
+    auto* expect = R"(
+tint_packed_vec3_u32_array_element = struct @align(16) {
+  packed:__packed_vec3<u32> @offset(0)
+}
+
+$B1: {  # root
+  %v:ptr<workgroup, array<tint_packed_vec3_u32_array_element, 1>, read_write> = var undef
+}
+
+%foo = func():void {
+  $B2: {
+    %3:ptr<workgroup, __packed_vec3<u32>, read_write> = access %v, 0u, 0u
+    %4:u32 = load_vector_element %3, 0u
+    %5:bool = convert %4
+    ret
+  }
+}
+)";
+
+    options.replace_bool_with_u32 = false;
+    Run();
+
+    EXPECT_EQ(expect, str());
+}
+
 }  // namespace
 }  // namespace tint::msl::writer::raise
