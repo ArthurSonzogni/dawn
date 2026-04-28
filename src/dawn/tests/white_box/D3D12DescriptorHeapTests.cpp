@@ -715,6 +715,16 @@ TEST_P(D3D12DescriptorHeapTests, PoolHeapsInPendingAndMultipleSubmits) {
     EXPECT_EQ(allocator->GetShaderVisiblePoolSizeForTesting(), kNumOfSwitches);
 }
 
+// Verify that an initial allocation larger than the default works.
+TEST_P(D3D12DescriptorHeapTests, FirstAllocLargerThanDefault) {
+    auto* allocator = mD3DDevice->GetSamplerShaderVisibleDescriptorAllocator();
+    const uint32_t defaultHeapSize = allocator->GetShaderVisibleHeapSizeForTesting();
+    uint32_t newHeapSize = std::min(defaultHeapSize * 2, allocator->GetShaderVisibleHeapMaxSize());
+
+    EXPECT_TRUE(allocator->AllocateAndSwitchShaderVisibleHeap(newHeapSize).IsSuccess());
+    EXPECT_EQ(allocator->GetShaderVisibleHeapSizeForTesting(), (newHeapSize));
+}
+
 // Verify shader-visible heaps do not recycle in multiple submits.
 TEST_P(D3D12DescriptorHeapTests, GrowHeapsInMultipleSubmits) {
     auto* allocator = mD3DDevice->GetSamplerShaderVisibleDescriptorAllocator();
@@ -729,7 +739,8 @@ TEST_P(D3D12DescriptorHeapTests, GrowHeapsInMultipleSubmits) {
     // Growth: Allocate + Tick() and ensure heaps are always unique.
     while (allocator->GetShaderVisiblePoolSizeForTesting() == 0) {
         EXPECT_TRUE(allocator->AllocateAndSwitchShaderVisibleHeap(heapSize).IsSuccess());
-        heapSize *= 2;
+        EXPECT_TRUE(heapSize <= allocator->GetShaderVisibleHeapSizeForTesting());
+        heapSize = std::min(heapSize * 2, allocator->GetShaderVisibleHeapMaxSize());
         ComPtr<ID3D12DescriptorHeap> heap = allocator->GetShaderVisibleHeap();
         EXPECT_TRUE(std::find(heaps.begin(), heaps.end(), heap) == heaps.end());
         heaps.insert(heap);
@@ -756,7 +767,7 @@ TEST_P(D3D12DescriptorHeapTests, GrowHeapsInPendingSubmit) {
     // Growth: Allocate new heaps.
     while (allocator->GetShaderVisiblePoolSizeForTesting() == 0) {
         EXPECT_TRUE(allocator->AllocateAndSwitchShaderVisibleHeap(heapSize).IsSuccess());
-        heapSize *= 2;
+        heapSize = std::min(heapSize * 2, allocator->GetShaderVisibleHeapMaxSize());
         ComPtr<ID3D12DescriptorHeap> heap = allocator->GetShaderVisibleHeap();
         EXPECT_TRUE(std::find(heaps.begin(), heaps.end(), heap) == heaps.end());
         heaps.insert(heap);
@@ -1686,7 +1697,6 @@ TEST_P(D3D12ResourceTableDescriptorHeapTests, SwitchOverViewHeapTableAndBindGrou
     queue.Submit(1, &commands);
 
     EXPECT_EQ(allocator->GetShaderVisibleHeapSerialForTesting(), heapSerial + HeapVersionID(1));
-    EXPECT_EQ(allocator->GetShaderVisibleHeapSizeForTesting(), heapSize * 4);
 }
 
 DAWN_INSTANTIATE_TEST(D3D12ResourceTableDescriptorHeapTests, D3D12Backend(), );

@@ -100,7 +100,7 @@ class ShaderVisibleDescriptorAllocator {
 
   private:
     struct SerialDescriptorHeap {
-        ExecutionSerial heapSerial;
+        ExecutionSerial lastUseSerial;
         std::unique_ptr<ShaderVisibleDescriptorHeap> heap;
     };
 
