@@ -230,7 +230,6 @@ class Server : public ServerBase {
     };
 
     void SetForwardingDeviceCallbacks(Known<WGPUDevice> device);
-    void ClearDeviceCallbacks(WGPUDevice device);
 
     // Async event callbacks:
     //   These callbacks are expected to be called while holding the server object lock via

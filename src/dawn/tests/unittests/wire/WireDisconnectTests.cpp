@@ -148,11 +148,9 @@ TEST_F(WireDisconnectTests, DeleteClientDestroysObjects) {
     EXPECT_CALL(api, DeviceCreateSampler(apiDevice, _)).WillOnce(Return(apiSampler));
 
     FlushClient();
-
     DeleteClient();
 
     // Expect release on all objects created by the client.
-    EXPECT_CALL(api, OnDeviceSetLoggingCallback(apiDevice, _)).Times(1);
     EXPECT_CALL(api, DeviceRelease(apiDevice)).Times(1);
     EXPECT_CALL(api, QueueRelease(apiQueue)).Times(1);
     EXPECT_CALL(api, CommandEncoderRelease(apiCommandEncoder)).Times(1);
@@ -160,10 +158,6 @@ TEST_F(WireDisconnectTests, DeleteClientDestroysObjects) {
     EXPECT_CALL(api, AdapterRelease(apiAdapter)).Times(1);
     EXPECT_CALL(api, InstanceRelease(apiInstance)).Times(1);
     FlushClient();
-
-    // Signal that we already released and cleared callbacks for |apiDevice|
-    DefaultApiDeviceWasReleased();
-    DefaultApiAdapterWasReleased();
 }
 
 }  // anonymous namespace
