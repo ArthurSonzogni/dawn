@@ -1061,13 +1061,6 @@ MaybeError EncodeTimestampsToNanosecondsConversion(CommandEncoder* encoder,
 
     DAWN_TRY(device->GetQueue()->WriteBuffer(paramsBuffer.Get(), 0, &params, sizeof(params)));
 
-    // In the internal shader to convert timestamps to nanoseconds, we can ensure no uninitialized
-    // data will be read and the full buffer range will be filled with valid data.
-    if (!destination->IsInitialized() &&
-        destination->IsFullBufferRange(firstQuery, sizeof(uint64_t) * queryCount)) {
-        destination->SetInitialized(true);
-    }
-
     return EncodeConvertTimestampsToNanoseconds(encoder, destination, availabilityBuffer.Get(),
                                                 paramsBuffer.Get());
 }

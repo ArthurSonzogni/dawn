@@ -1300,8 +1300,8 @@ TEST_P(BufferZeroInitTest, IndirectBufferForDispatchIndirect) {
 
 // Test the buffer will be lazily initialized correctly when its first use is in resolveQuerySet
 TEST_P(BufferZeroInitTest, ResolveQuerySet) {
-    // Timestamp query is not supported on OpenGL
-    DAWN_TEST_UNSUPPORTED_IF(IsOpenGL());
+    // Skip if timestamp feature is not supported on device
+    DAWN_TEST_UNSUPPORTED_IF(!SupportsFeatures({wgpu::FeatureName::TimestampQuery}));
 
     // TODO(crbug.com/dawn/545): Crash occurs if we only call WriteTimestamp in a command encoder
     // without any copy commands on Metal on AMD GPU.
@@ -1310,15 +1310,9 @@ TEST_P(BufferZeroInitTest, ResolveQuerySet) {
     // TODO(crbug.com/440123094): Implement QuerySetWGPU
     DAWN_SUPPRESS_TEST_IF(IsWebGPUOnWebGPU());
 
-    // Skip if timestamp feature is not supported on device
-    DAWN_TEST_UNSUPPORTED_IF(!SupportsFeatures({wgpu::FeatureName::TimestampQuery}));
-
-    // crbug.com/dawn/940: Does not work on Mac 11.0+. Backend validation changed.
-    DAWN_TEST_UNSUPPORTED_IF(IsMacOS() && !IsMacOS(10));
-
     constexpr uint64_t kBufferSize = 16u;
     constexpr wgpu::BufferUsage kBufferUsage =
-        wgpu::BufferUsage::QueryResolve | wgpu::BufferUsage::CopyDst;
+        wgpu::BufferUsage::QueryResolve | wgpu::BufferUsage::CopySrc;
 
     wgpu::QuerySetDescriptor descriptor;
     descriptor.count = 2u;
@@ -1338,6 +1332,25 @@ TEST_P(BufferZeroInitTest, ResolveQuerySet) {
         wgpu::CommandBuffer commands = encoder.Finish();
 
         EXPECT_LAZY_CLEAR(0u, queue.Submit(1, &commands));
+    }
+
+    // Resolve data to the whole buffer requires lazy initialization if the buffer is read without
+    // being submitted.
+    {
+        constexpr uint32_t kQueryCount = 2u;
+        constexpr uint64_t kDestinationOffset = 0u;
+
+        wgpu::Buffer destination = CreateBuffer(kBufferSize, kBufferUsage);
+        wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+        encoder.WriteTimestamp(querySet, 0);
+        encoder.WriteTimestamp(querySet, 1);
+        encoder.ResolveQuerySet(querySet, 0, kQueryCount, destination, kDestinationOffset);
+        /* no submit*/ encoder.Finish();
+
+        // Lazy clear occurs on read.
+        constexpr std::array<uint64_t, kQueryCount> kExpectedData = {{0, 0}};
+        EXPECT_LAZY_CLEAR(1u, EXPECT_BUFFER_U64_RANGE_EQ(kExpectedData.data(), destination, 0,
+                                                         kExpectedData.size()));
     }
 
     // Resolve data to partial of the buffer needs lazy initialization.
