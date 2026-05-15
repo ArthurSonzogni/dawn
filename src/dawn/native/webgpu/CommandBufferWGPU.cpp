@@ -976,7 +976,7 @@ MaybeError CommandBuffer::CaptureCreationParameters(CaptureContext& captureConte
     return {};
 }
 
-WGPUCommandBuffer CommandBuffer::Encode() {
+ResultOrError<WGPUCommandBuffer> CommandBuffer::Encode() {
     auto& wgpu = ToBackend(GetDevice())->wgpu.get();
 
     // TODO(crbug.com/413053623): Use stored command encoder descriptor
