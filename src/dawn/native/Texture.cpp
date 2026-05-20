@@ -518,6 +518,12 @@ MaybeError ValidateTextureViewUsage(const DeviceBase* device,
                     "The texture view usage (%s) is not a subset of the texture usage (%s).",
                     inheritedUsage, texture->GetUsage());
 
+    if (texture->GetUsage() & wgpu::TextureUsage::TransientAttachment) {
+        DAWN_INVALID_IF(
+            inheritedUsage != texture->GetUsage(),
+            "Views on textures with TransientAttachment usage may not subset the texture usages.");
+    }
+
     return ValidateTextureUsageConstraints(device, texture->GetDimension(), inheritedUsage, format,
                                            {});
 }

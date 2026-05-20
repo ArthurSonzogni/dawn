@@ -470,9 +470,11 @@ MaybeError ValidateResolveTarget(const DeviceBase* device,
 
     const TextureViewBase* resolveTarget = colorAttachment.resolveTarget;
     const TextureViewBase* attachment = colorAttachment.view;
-    DAWN_TRY(device->ValidateObject(colorAttachment.resolveTarget));
-    DAWN_TRY(ValidateCanUseAs(colorAttachment.resolveTarget, wgpu::TextureUsage::RenderAttachment,
-                              usageValidationMode));
+    DAWN_TRY(device->ValidateObject(resolveTarget));
+    DAWN_TRY(
+        ValidateCanUseAs(resolveTarget, wgpu::TextureUsage::RenderAttachment, usageValidationMode));
+    DAWN_INVALID_IF(resolveTarget->GetUsage() & wgpu::TextureUsage::TransientAttachment,
+                    "Cannot use transient attachment %s as a resolve target.", resolveTarget);
 
     DAWN_INVALID_IF(!attachment->GetTexture()->IsMultisampledTexture(),
                     "Cannot set %s as a resolve target when the color attachment %s has a sample "
