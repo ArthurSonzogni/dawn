@@ -885,7 +885,7 @@ MaybeError BufferBase::Unmap(bool forDestroy) {
         case BufferState::Unmapped:
             return {};
         case BufferState::SharedMemoryNoAccess:
-            break;
+            return DAWN_VALIDATION_ERROR("%s unmapped without shared memory access.", this);
         case BufferState::PendingMap:
         case BufferState::Destroyed:
             // UnmapInternal() already handled waiting for PendingMap to be done so there must have

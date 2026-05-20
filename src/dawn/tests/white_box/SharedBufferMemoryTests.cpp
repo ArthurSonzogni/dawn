@@ -368,6 +368,27 @@ TEST_P(SharedBufferMemoryTests, EndAccessOnDifferentBuffer) {
     ASSERT_NE(state.fences[0], nullptr);
 }
 
+// Validate that calling Unmap after EndAccess is an error
+TEST_P(SharedBufferMemoryTests, UnmapAfterEndAccess) {
+    wgpu::SharedBufferMemory memory = GetParam().mBackend->CreateSharedBufferMemory(
+        device, wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::CopyDst, kBufferSize);
+
+    // Buffer state is SharedMemoryNoAccess
+    wgpu::Buffer buffer = memory.CreateBuffer();
+
+    // BeginAccess transitions buffer state from SharedMemoryNoAccess to Unmapped
+    wgpu::SharedBufferMemoryBeginAccessDescriptor beginDesc = {};
+    beginDesc.initialized = true;
+    memory.BeginAccess(buffer, &beginDesc);
+
+    // EndAccess transitions buffer state back to SharedMemoryNoAccess
+    wgpu::SharedBufferMemoryEndAccessState endState = {};
+    memory.EndAccess(buffer, &endState);
+
+    // Unmapping the buffer now should be an error
+    ASSERT_DEVICE_ERROR(buffer.Unmap());
+}
+
 // Validate that calling BeginAccess twice produces an error.
 TEST_P(SharedBufferMemoryTests, EnsureNoDuplicateBeginAccessCalls) {
     wgpu::SharedBufferMemory memory =
