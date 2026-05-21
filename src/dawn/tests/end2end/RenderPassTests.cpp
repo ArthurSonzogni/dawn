@@ -234,6 +234,53 @@ TEST_P(RenderPassTest, ClearLowestMipOfR8Unorm) {
     EXPECT_BUFFER_U8_EQ(255, buf, 0);
 }
 
+// Test that clearing one slice of an R8Unorm texture works. Regression test for crbug.com/501499832
+// with toggle metal_render_r8_rg8_unorm_small_mip_to_temp_texture and --enable-backend-validation.
+TEST_P(RenderPassTest, ClearR8UnormDepthSlice) {
+    const uint32_t kLastMipLevel = 2;
+
+    // Create the texture and buffer used for readback.
+    wgpu::TextureDescriptor texDesc;
+    texDesc.dimension = wgpu::TextureDimension::e3D;
+    texDesc.format = wgpu::TextureFormat::R8Unorm;
+    texDesc.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc;
+    texDesc.size = {32, 32, 8};
+    texDesc.mipLevelCount = kLastMipLevel + 1;
+    wgpu::Texture tex = device.CreateTexture(&texDesc);
+
+    wgpu::BufferDescriptor bufDesc;
+    bufDesc.size = 8;
+    bufDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::CopySrc;
+    wgpu::Buffer buf = device.CreateBuffer(&bufDesc);
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+
+    // Clear the texture with a render pass.
+    {
+        wgpu::TextureViewDescriptor viewDesc;
+        viewDesc.baseMipLevel = kLastMipLevel;
+
+        utils::ComboRenderPassDescriptor renderPass({tex.CreateView(&viewDesc)});
+        renderPass.cColorAttachments[0].clearValue = {1.0f, 0.0f, 0.0f, 1.0f};
+        renderPass.cColorAttachments[0].loadOp = wgpu::LoadOp::Clear;
+        renderPass.cColorAttachments[0].storeOp = wgpu::StoreOp::Store;
+        renderPass.cColorAttachments[0].depthSlice = 1;
+        wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPass);
+        pass.End();
+    }
+
+    wgpu::CommandBuffer commands = encoder.Finish();
+    queue.Submit(1, &commands);
+
+    static uint8_t expected[]{
+        // Slice 0 still initialized to 0.0
+        0,
+        // Slice 1 cleared to 1.0
+        255,
+    };
+    EXPECT_TEXTURE_EQ(expected, tex, {0, 0, 0}, {1, 1, 2}, kLastMipLevel);
+}
+
 // Test that clearing a depth16unorm texture with multiple subresources works. This is a regression
 // test for dawn:1389 where Intel Metal devices fail to do that correctly, requiring a workaround.
 TEST_P(RenderPassTest, ClearMultisubresourceAfterWriteDepth16Unorm) {
@@ -371,7 +418,7 @@ DAWN_INSTANTIATE_TEST(
     D3D12Backend({}, {"use_d3d12_render_pass"}),
     MetalBackend(),
 
-    // for dawn:1071 regression
+    // for crbug.com/40096166 and crbug.com/501499832 regressions
     MetalBackend({"metal_render_r8_rg8_unorm_small_mip_to_temp_texture"}),
 
     // for dawn:1389 regression
