@@ -130,8 +130,8 @@ Result<SuccessType> Raise(core::ir::Module& module, const Options& options) {
     core_polyfills.pack_4xu8_clamp = true;
     core_polyfills.pack_unpack_4x8_norm = options.workarounds.polyfill_pack_unpack_4x8_norm;
     core_polyfills.abs_signed_int = true;
-    core_polyfills.length_scalar_f32 = options.workarounds.polyfill_length_scalar_f32;
-    core_polyfills.distance_scalar_f32 = options.workarounds.polyfill_distance_scalar_f32;
+    core_polyfills.length_scalar_float = options.workarounds.polyfill_length_scalar_float;
+    core_polyfills.distance_scalar_float = options.workarounds.polyfill_distance_scalar_float;
     core_polyfills.subgroup_broadcast_f16 = options.workarounds.polyfill_subgroup_broadcast_f16;
     core_polyfills.saturate_as_min_max = options.workarounds.polyfill_saturate_as_min_max_f16;
     TINT_CHECK_RESULT(core::ir::transform::BuiltinPolyfill(module, core_polyfills));
@@ -222,11 +222,11 @@ Result<SuccessType> Raise(core::ir::Module& module, const Options& options) {
         .signed_negation = true, .signed_arithmetic = true, .signed_shiftleft = true};
     TINT_CHECK_RESULT(core::ir::transform::SignedIntegerPolyfill(module, signed_integer_cfg));
 
-    // AMD mesa front end optimizer bug for unary negation and abs.
-    // Fixed in 25.3 - See crbug.com/448294721
+    // AMD Mesa front end optimizer bug for unary f32 and f16 negation and abs.
+    // Fixed in 25.3 - See crbug.com/448294721 and crbug.com/500099471
     raise::UnaryPolyfillConfig unary_polyfill_cfg = {
-        .polyfill_f32_negation = options.workarounds.polyfill_unary_f32_negation,
-        .polyfill_f32_abs = options.workarounds.polyfill_f32_abs};
+        .polyfill_float_negation = options.workarounds.polyfill_float_negation,
+        .polyfill_float_abs = options.workarounds.polyfill_float_abs};
 
     TINT_CHECK_RESULT(raise::UnaryPolyfill(module, unary_polyfill_cfg));
 

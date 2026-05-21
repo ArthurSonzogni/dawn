@@ -67,8 +67,8 @@ struct FuzzedOptions {
     bool subgroup_shuffle_clamped;
     bool polyfill_subgroup_broadcast_f16;
     bool pass_matrix_by_pointer;
-    bool polyfill_unary_f32_negation;
-    bool polyfill_f32_abs;
+    bool polyfill_float_negation;
+    bool polyfill_float_abs;
     bool use_demote_to_helper_invocation;
     bool use_storage_input_output_16;
     bool use_zero_initialize_workgroup_memory;
@@ -83,8 +83,8 @@ struct FuzzedOptions {
     bool polyfill_saturate_as_min_max_f16;
     bool multisampled_framebuffer_fetch;
     bool cooperative_matrix_stride_is_matrix_elements;
-    bool polyfill_length_scalar_f32;
-    bool polyfill_distance_scalar_f32;
+    bool polyfill_length_scalar_float;
+    bool polyfill_distance_scalar_float;
 
     /// Reflect the fields of this class so that it can be used by tint::ForeachField()
     TINT_REFLECT(FuzzedOptions,
@@ -102,8 +102,8 @@ struct FuzzedOptions {
                  subgroup_shuffle_clamped,
                  polyfill_subgroup_broadcast_f16,
                  pass_matrix_by_pointer,
-                 polyfill_unary_f32_negation,
-                 polyfill_f32_abs,
+                 polyfill_float_negation,
+                 polyfill_float_abs,
                  use_demote_to_helper_invocation,
                  use_storage_input_output_16,
                  use_zero_initialize_workgroup_memory,
@@ -118,8 +118,8 @@ struct FuzzedOptions {
                  polyfill_saturate_as_min_max_f16,
                  multisampled_framebuffer_fetch,
                  cooperative_matrix_stride_is_matrix_elements,
-                 polyfill_length_scalar_f32,
-                 polyfill_distance_scalar_f32);
+                 polyfill_length_scalar_float,
+                 polyfill_distance_scalar_float);
     TINT_REFLECT_HASH_CODE(FuzzedOptions);
 };
 
@@ -312,8 +312,8 @@ Result<SuccessType> IRFuzzer(core::ir::Module& module,
     options.workarounds.polyfill_subgroup_broadcast_f16 =
         fuzzed_options.polyfill_subgroup_broadcast_f16;
     options.workarounds.pass_matrix_by_pointer = fuzzed_options.pass_matrix_by_pointer;
-    options.workarounds.polyfill_unary_f32_negation = fuzzed_options.polyfill_unary_f32_negation;
-    options.workarounds.polyfill_f32_abs = fuzzed_options.polyfill_f32_abs;
+    options.workarounds.polyfill_float_negation = fuzzed_options.polyfill_float_negation;
+    options.workarounds.polyfill_float_abs = fuzzed_options.polyfill_float_abs;
     options.extensions.use_demote_to_helper_invocation =
         fuzzed_options.use_demote_to_helper_invocation;
     options.extensions.use_storage_input_output_16 = fuzzed_options.use_storage_input_output_16;
@@ -331,8 +331,9 @@ Result<SuccessType> IRFuzzer(core::ir::Module& module,
         fuzzed_options.texture_sample_compare_depth_cube_array;
     options.workarounds.polyfill_saturate_as_min_max_f16 =
         fuzzed_options.polyfill_saturate_as_min_max_f16;
-    options.workarounds.polyfill_length_scalar_f32 = fuzzed_options.polyfill_length_scalar_f32;
-    options.workarounds.polyfill_distance_scalar_f32 = fuzzed_options.polyfill_distance_scalar_f32;
+    options.workarounds.polyfill_length_scalar_float = fuzzed_options.polyfill_length_scalar_float;
+    options.workarounds.polyfill_distance_scalar_float =
+        fuzzed_options.polyfill_distance_scalar_float;
     options.workarounds.cooperative_matrix_stride_is_matrix_elements =
         fuzzed_options.cooperative_matrix_stride_is_matrix_elements;
     options.multisampled_framebuffer_fetch = fuzzed_options.multisampled_framebuffer_fetch;

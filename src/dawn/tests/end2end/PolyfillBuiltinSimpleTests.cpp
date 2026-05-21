@@ -38,10 +38,25 @@ namespace {
 
 class PolyfillBuiltinSimpleTests : public DawnTest {
   public:
+    std::vector<wgpu::FeatureName> GetRequiredFeatures() override {
+        std::vector<wgpu::FeatureName> features;
+        if (SupportsFeatures({wgpu::FeatureName::ShaderF16})) {
+            features.push_back(wgpu::FeatureName::ShaderF16);
+        }
+        return features;
+    }
+
     wgpu::Buffer CreateBuffer(const std::vector<uint32_t>& data,
                               wgpu::BufferUsage usage = wgpu::BufferUsage::Storage |
                                                         wgpu::BufferUsage::CopySrc) {
         uint64_t bufferSize = static_cast<uint64_t>(data.size() * sizeof(uint32_t));
+        return utils::CreateBufferFromData(device, data.data(), bufferSize, usage);
+    }
+
+    wgpu::Buffer CreateBuffer(const std::vector<float>& data,
+                              wgpu::BufferUsage usage = wgpu::BufferUsage::Storage |
+                                                        wgpu::BufferUsage::CopySrc) {
+        uint64_t bufferSize = static_cast<uint64_t>(data.size() * sizeof(float));
         return utils::CreateBufferFromData(device, data.data(), bufferSize, usage);
     }
 
@@ -373,6 +388,74 @@ TEST_P(PolyfillBuiltinSimpleTests, CaseSwitchToIfComplex) {
     EXPECT_BUFFER_U32_RANGE_EQ(expected.data(), output, 0, expected.size());
 }
 
+// Some versions of AMD Mesa (prior to 25.3) have a front-end optimizer bug where unary negation
+// and abs operations on floating point values (f32 and f16) are incorrectly optimized or
+// handled, leading to incorrect results.
+// See crbug.com/448294721 and crbug.com/500099471.
+TEST_P(PolyfillBuiltinSimpleTests, PolyfillFloatUnary) {
+    bool hasF16 = device.HasFeature(wgpu::FeatureName::ShaderF16);
+
+    std::string shader = R"(
+        @group(0) @binding(0) var<storage, read> in_f32 : array<f32, 4>;
+        @group(0) @binding(1) var<storage, read_write> out_f32 : array<f32, 8>;
+
+        @compute @workgroup_size(1)
+        fn main() {
+            out_f32[0] = abs(in_f32[0]);
+            out_f32[1] = -in_f32[1];
+            out_f32[2] = length(in_f32[2]);
+            out_f32[3] = distance(in_f32[3], 2.0);
+    )";
+
+    if (hasF16) {
+        shader = "enable f16;\n" + shader;
+        shader += R"(
+            out_f32[4] = f32(abs(f16(in_f32[0])));
+            out_f32[5] = f32(-f16(in_f32[1]));
+            out_f32[6] = f32(length(f16(in_f32[2])));
+            out_f32[7] = f32(distance(f16(in_f32[3]), 2.0h));
+        )";
+    }
+
+    shader += R"(
+        }
+    )";
+
+    wgpu::ComputePipeline pipeline = CreateComputePipeline(shader);
+
+    std::vector<float> input_data = {-1.5f, 2.0f, -2.5f, 1.0f};
+    wgpu::Buffer input = CreateBuffer(input_data, wgpu::BufferUsage::Storage);
+    wgpu::Buffer output = CreateBuffer(8, 0);
+    wgpu::BindGroup bindGroup = utils::MakeBindGroup(device, pipeline.GetBindGroupLayout(0),
+                                                     {
+                                                         {0, input},
+                                                         {1, output},
+                                                     });
+
+    wgpu::CommandBuffer commands;
+    {
+        wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+        wgpu::ComputePassEncoder pass = encoder.BeginComputePass();
+        pass.SetPipeline(pipeline);
+        pass.SetBindGroup(0, bindGroup);
+        pass.DispatchWorkgroups(1);
+        pass.End();
+        commands = encoder.Finish();
+    }
+
+    queue.Submit(1, &commands);
+
+    std::vector<float> expected = {1.5f, -2.0f, 2.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    if (hasF16) {
+        expected[4] = 1.5f;
+        expected[5] = -2.0f;
+        expected[6] = 2.5f;
+        expected[7] = 1.0f;
+    }
+
+    EXPECT_BUFFER_FLOAT_RANGE_EQ(expected.data(), output, 0, expected.size());
+}
+
 DAWN_INSTANTIATE_TEST(PolyfillBuiltinSimpleTests,
                       D3D12Backend(),
                       D3D11Backend(),
@@ -383,6 +466,7 @@ DAWN_INSTANTIATE_TEST(PolyfillBuiltinSimpleTests,
                       MetalBackend({"scalarize_max_min_clamp"}),
                       VulkanBackend({"scalarize_max_min_clamp"}),
                       VulkanBackend({"vulkan_polyfill_switch_with_if"}),
+                      VulkanBackend({"spirv_polyfill_float_negation", "spirv_polyfill_float_abs"}),
                       D3D11Backend({"scalarize_max_min_clamp"}),
                       OpenGLESBackend());
 

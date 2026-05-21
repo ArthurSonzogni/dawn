@@ -101,8 +101,8 @@ struct State {
                         }
                         break;
                     case core::BuiltinFn::kDistance:
-                        if (config.distance_scalar_f32 &&
-                            builtin->Args()[0]->Type()->Is<core::type::F32>()) {
+                        if (config.distance_scalar_float &&
+                            builtin->Args()[0]->Type()->IsFloatScalar()) {
                             worklist.Push(builtin);
                         }
                         break;
@@ -135,8 +135,8 @@ struct State {
                         }
                         break;
                     case core::BuiltinFn::kLength:
-                        if (config.length_scalar_f32 &&
-                            builtin->Args()[0]->Type()->Is<core::type::F32>()) {
+                        if (config.length_scalar_float &&
+                            builtin->Args()[0]->Type()->IsFloatScalar()) {
                             worklist.Push(builtin);
                         }
                         break;
@@ -237,7 +237,7 @@ struct State {
                     Degrees(builtin);
                     break;
                 case core::BuiltinFn::kDistance:
-                    DistanceScalarF32(builtin);
+                    DistanceScalarFloat(builtin);
                     break;
                 case core::BuiltinFn::kSmoothstep:
                     SmoothStep(builtin);
@@ -258,7 +258,7 @@ struct State {
                     InsertBits(builtin);
                     break;
                 case core::BuiltinFn::kLength:
-                    LengthScalarF32(builtin);
+                    LengthScalarFloat(builtin);
                     break;
                 case core::BuiltinFn::kRadians:
                     Radians(builtin);
@@ -577,9 +577,9 @@ struct State {
         call->Destroy();
     }
 
-    /// Polyfill a `distance()` builtin call for scalar f32.
+    /// Polyfill a `distance()` builtin call for scalar f32 and f16.
     /// @param call the builtin call instruction
-    void DistanceScalarF32(ir::CoreBuiltinCall* call) {
+    void DistanceScalarFloat(ir::CoreBuiltinCall* call) {
         // distance(x, y) -> abs(x - y)
         b.InsertBefore(call, [&] {
             auto* sub = b.Subtract(call->Args()[0], call->Args()[1]);
@@ -892,9 +892,9 @@ struct State {
         }
     }
 
-    /// Polyfill a `length()` builtin call for scalar f32.
+    /// Polyfill a `length()` builtin call for scalar f32 and f16.
     /// @param call the builtin call instruction
-    void LengthScalarF32(ir::CoreBuiltinCall* call) {
+    void LengthScalarFloat(ir::CoreBuiltinCall* call) {
         // length(x) -> abs(x)
         b.InsertBefore(call, [&] {
             b.CallWithResult(call->DetachResult(), core::BuiltinFn::kAbs, call->Args()[0]);
@@ -966,9 +966,9 @@ struct State {
             one = b.MatchWidth(1_h, type);
         }
 
-        // Intel mesa incorrectly performs saturate on vec f16 loads from uniforms.
+        // Intel Mesa incorrectly performs saturate on vec f16 loads from uniforms.
         // Note: to avoid compiler pattern matching, we do the min then the max which is
-        // functionally different than doing the max then the min for high/low swapped (this doesnt
+        // functionally different than doing the max then the min for high/low swapped (this doesn't
         // matter in the case with saturate). See crbug.com/448873316
         if (config.saturate_as_min_max && is_vec_f16) {
             b.InsertBefore(call, [&] {
