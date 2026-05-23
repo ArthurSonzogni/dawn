@@ -117,7 +117,7 @@ class BindGroupLayout : public BindGroupLayoutInternalBase {
     // Caches VkDescriptorSetLayouts for specializations so that the lifetime guarantees are the
     // same as for mHandle. Note that the noop specialization has mHandle cached directly, but
     // mHandle is also kept separate for efficiency when creating BindGroups.
-    absl::flat_hash_map<Specialization, VkDescriptorSetLayout> mSpecializations;
+    MutexProtected<absl::flat_hash_map<Specialization, VkDescriptorSetLayout>> mSpecializations;
 
     // Maps from indices of texture entries that are paired with static samplers
     // to indices of the entries of their respective samplers.

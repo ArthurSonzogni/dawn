@@ -251,7 +251,7 @@ MaybeError BindGroupLayout::Initialize() {
     DAWN_TRY(CheckVkSuccess(device->fn.CreateDescriptorSetLayout(device->GetVkDevice(), &createInfo,
                                                                  nullptr, &*mHandle),
                             "CreateDescriptorSetLayout"));
-    mSpecializations.insert({{}, mHandle});
+    mSpecializations->insert({{}, mHandle});
 
     SetLabelImpl();
 
@@ -260,8 +260,15 @@ MaybeError BindGroupLayout::Initialize() {
 
 ResultOrError<VkDescriptorSetLayout> BindGroupLayout::GetOrCreateSpecializedHandle(
     const Specialization& specialization) {
-    if (auto it = mSpecializations.find(specialization); it != mSpecializations.end()) {
-        return it->second;
+    if (auto specialized = mSpecializations.ConstUse(
+            [&](auto specializations) -> std::optional<VkDescriptorSetLayout> {
+                if (auto it = specializations->find(specialization); it != specializations->end()) {
+                    return it->second;
+                }
+                return std::nullopt;
+            });
+        specialized) {
+        return *specialized;
     }
 
     Device* device = ToBackend(GetDevice());
@@ -282,8 +289,14 @@ ResultOrError<VkDescriptorSetLayout> BindGroupLayout::GetOrCreateSpecializedHand
                                                                  nullptr, &*specialized),
                             "CreateDescriptorSetLayout"));
 
-    mSpecializations.insert({specialization, specialized});
-    return specialized;
+    return mSpecializations.Use([&](auto specializations) -> ResultOrError<VkDescriptorSetLayout> {
+        auto [it, inserted] = specializations->insert({specialization, specialized});
+        if (!inserted) {
+            device->fn.DestroyDescriptorSetLayout(device->GetVkDevice(), specialized, nullptr);
+            return it->second;
+        }
+        return specialized;
+    });
 }
 
 void BindGroupLayout::DestroyImpl(DestroyReason reason) {
@@ -293,10 +306,12 @@ void BindGroupLayout::DestroyImpl(DestroyReason reason) {
 
     // DescriptorSetLayout aren't used by execution on the GPU and can be deleted at any time,
     // so we can destroy mHandle immediately instead of using the FencedDeleter.
-    for (auto& [_, handle] : mSpecializations) {
-        device->fn.DestroyDescriptorSetLayout(device->GetVkDevice(), handle, nullptr);
-    }
-    mSpecializations.clear();
+    mSpecializations.Use([&](auto specializations) {
+        for (auto& [_, handle] : *specializations) {
+            device->fn.DestroyDescriptorSetLayout(device->GetVkDevice(), handle, nullptr);
+        }
+        specializations->clear();
+    });
 
     // Handled in the loop above already.
     mHandle = VK_NULL_HANDLE;
