@@ -87,6 +87,11 @@ Blob::~Blob() {
     }
 }
 
+void Blob::Shrink(size_t extent) {
+    DAWN_CHECK(mSize >= extent);
+    mSize = extent;
+}
+
 bool Blob::Empty() const {
     return mSize == 0;
 }
