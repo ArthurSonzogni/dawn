@@ -1430,28 +1430,31 @@ MaybeError CommandBuffer::RecordComputePass(CommandRecordingContext* commandCont
             case Command::Dispatch: {
                 DispatchCmd* dispatch = mCommands.NextCommand<DispatchCmd>();
 
+                const SyncScopeResourceUsage& scope =
+                    resourceUsages.dispatchUsages[currentDispatch++];
+
                 // Skip noop dispatches, it can cause D3D12 warning from validation layers and
                 // leads to device lost.
                 if (dispatch->x == 0 || dispatch->y == 0 || dispatch->z == 0) {
                     break;
                 }
 
-                DAWN_TRY(TransitionAndClearForSyncScope(
-                    commandContext, resourceUsages.dispatchUsages[currentDispatch]));
+                DAWN_TRY(TransitionAndClearForSyncScope(commandContext, scope));
                 DAWN_TRY(bindingTracker->Apply(commandContext));
                 immediates.Apply(commandContext);
 
                 RecordNumWorkgroupsForDispatch(commandList, lastPipeline, dispatch);
                 commandList->Dispatch(dispatch->x, dispatch->y, dispatch->z);
-                currentDispatch++;
                 break;
             }
 
             case Command::DispatchIndirect: {
                 DispatchIndirectCmd* dispatch = mCommands.NextCommand<DispatchIndirectCmd>();
 
-                DAWN_TRY(TransitionAndClearForSyncScope(
-                    commandContext, resourceUsages.dispatchUsages[currentDispatch]));
+                const SyncScopeResourceUsage& scope =
+                    resourceUsages.dispatchUsages[currentDispatch++];
+
+                DAWN_TRY(TransitionAndClearForSyncScope(commandContext, scope));
                 DAWN_TRY(bindingTracker->Apply(commandContext));
                 immediates.Apply(commandContext);
 
@@ -1461,7 +1464,6 @@ MaybeError CommandBuffer::RecordComputePass(CommandRecordingContext* commandCont
                     signature.Get(), 1,
                     ToBackend(dispatch->indirectBuffer.Get())->GetD3D12Resource(),
                     dispatch->indirectOffset, nullptr, 0);
-                currentDispatch++;
                 break;
             }
 
