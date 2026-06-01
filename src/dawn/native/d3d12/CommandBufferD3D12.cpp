@@ -528,11 +528,8 @@ class BindGroupStateTracker : public BindGroupTrackerBase<false> {
                     minSamplerDescriptorCount));
             }
 
-            mDirtyBindGroupsObjectChangedOrIsDynamic |= mBindGroupLayoutsMask;
-            mDirtyBindGroups |= mBindGroupLayoutsMask;
-
             // Must be called before applying the bindgroups. This sets the descriptor heaps for
-            // both render and compute pipelines.
+            // both render and compute pipelines. It also makes the bind groups dirty for both.
             SetID3D12DescriptorHeaps(commandList);
 
             for (BindGroupIndex index : mBindGroupLayoutsMask) {
@@ -571,6 +568,11 @@ class BindGroupStateTracker : public BindGroupTrackerBase<false> {
     }
 
     void ResetRootSamplerTables() { mBoundRootSamplerTables = {}; }
+
+    void MarkBindGroupsDirty() {
+        mDirtyBindGroupsObjectChangedOrIsDynamic |= mBindGroupLayoutsMask;
+        mDirtyBindGroups |= mBindGroupLayoutsMask;
+    }
 
     void SetID3D12DescriptorHeaps(ID3D12GraphicsCommandList* commandList);
 
@@ -657,7 +659,7 @@ class BindGroupStateTracker : public BindGroupTrackerBase<false> {
     }
 
     void UpdateRootSignatureIfNecessary(ID3D12GraphicsCommandList* commandList) {
-        if (mLastAppliedPipelineLayout != mPipelineLayout) {
+        if (!AreLayoutsCompatible()) {
             SetRootSignature(commandList, mPipelineLayout);
             // Invalidate the root sampler tables previously set in the root signature.
             ResetRootSamplerTables();
@@ -818,6 +820,11 @@ class DescriptorHeapState {
         // descriptor heaps.
         mComputeBindingTracker.ResetRootSamplerTables();
         mGraphicsBindingTracker.ResetRootSamplerTables();
+
+        // Mark the bind groups as dirty on both trackers to make sure the next Apply() on either
+        // pipeline repopulates using the new heaps.
+        mComputeBindingTracker.MarkBindGroupsDirty();
+        mGraphicsBindingTracker.MarkBindGroupsDirty();
     }
 
     BindGroupStateTracker<ComputePipeline>* GetComputeBindingTracker() {
