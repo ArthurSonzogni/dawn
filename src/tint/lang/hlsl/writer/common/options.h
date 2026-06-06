@@ -147,10 +147,14 @@ struct Options {
         /// Set to `true` to generate polyfill for `subgroupBroadcast(f16)`
         bool polyfill_subgroup_broadcast_f16 = false;
 
+        /// Set to `true` to collapse redundant subgroup min and max operations
+        bool collapse_subgroup_min_max = false;
+
         TINT_REFLECT(Workarounds,
                      scalarize_max_min_clamp,
                      polyfill_reflect_vec2_f32,
-                     polyfill_subgroup_broadcast_f16);
+                     polyfill_subgroup_broadcast_f16,
+                     collapse_subgroup_min_max);
         bool operator==(const Workarounds&) const = default;
     };
 
