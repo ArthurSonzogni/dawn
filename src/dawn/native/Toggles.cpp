@@ -753,6 +753,11 @@ static constexpr ToggleEnumAndInfoList kToggleNameAndInfoList = {{
      {"decompose_uniform_buffers",
       "Decompose uniform buffers into arrays of vec4<u32> on backends for Vulkan and OpenGL.",
       "https://crbug.com/448452698", ToggleStage::Adapter}},
+    {Toggle::CollapseSubgroupMinMax,
+     {"collapse_subgroup_min_max",
+      "Collapse redundant subgroup min and max operations (e.g., subgroupMin(subgroupMin(x))) into "
+      "a single operation. This works around a driver crash on some AMD GPUs.",
+      "https://crbug.com/508265321", ToggleStage::Device}},
     {Toggle::VulkanEnableF16OnNvidia,
      {"vulkan_enable_f16_on_nvidia", "Enables F16 on Nvidia GPUs with Vulkan",
       "https://crbug.com/42251215", ToggleStage::Adapter}},
