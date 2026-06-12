@@ -171,8 +171,9 @@ static constexpr FeatureEnumAndInfo kFeatureInfo[] = {
       "implicit_device_synchronization.md",
       FeatureInfo::FeatureState::Stable}},
     {Feature::TransientAttachments,
-     {"Support transient attachments that allow render pass operations to stay in tile memory, "
-      "avoiding VRAM traffic and potentially avoiding VRAM allocation for the textures.",
+     {"Presence of this feature on an Adapter is a hint indicating that the TransientAttachment "
+      "usage will be used by the backend. If it's not present, the usage is allowed, but it is a "
+      "no-op. Enabling this feature on a Device doesn't do anything.",
       "https://dawn.googlesource.com/dawn/+/refs/heads/main/docs/dawn/features/"
       "transient_attachments.md",
       FeatureInfo::FeatureState::Stable}},
