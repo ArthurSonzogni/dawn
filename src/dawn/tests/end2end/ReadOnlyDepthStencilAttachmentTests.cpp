@@ -293,6 +293,9 @@ class ReadOnlyDepthStencilAttachmentTests
 class ReadOnlyDepthAttachmentTests : public ReadOnlyDepthStencilAttachmentTests {};
 
 TEST_P(ReadOnlyDepthAttachmentTests, SampleFromAttachment) {
+    // Dawn's DEPS in M150 do not contain the required ANGLE fix for these to pass.
+    DAWN_SUPPRESS_TEST_IF(IsOpenGLES());
+
     TestSpec spec;
     spec.readonlyAspects = wgpu::TextureAspect::DepthOnly;
     spec.sampledAspect = wgpu::TextureAspect::DepthOnly;
@@ -358,6 +361,9 @@ TEST_P(ReadOnlyDepthAttachmentTests, UnusedAspectWithReadOnly) {
 class ReadOnlyStencilAttachmentTests : public ReadOnlyDepthStencilAttachmentTests {};
 
 TEST_P(ReadOnlyStencilAttachmentTests, SampleFromAttachment) {
+    // Dawn's DEPS in M150 do not contain the required ANGLE fix for these to pass.
+    DAWN_SUPPRESS_TEST_IF(IsOpenGLES());
+
     // TODO(crbug.com/40238674): Fails on Pixel 10.
     DAWN_SUPPRESS_TEST_IF(IsImgTec());
     // stencilRefValue < stencilValue (stencilInitValue), so stencil test passes. The pipeline
@@ -427,8 +433,12 @@ class ReadOnlyDepthAndStencilAttachmentTests : public ReadOnlyDepthStencilAttach
 
 // Test that using stencilReadOnly while modifying the depth aspect works.
 TEST_P(ReadOnlyDepthAndStencilAttachmentTests, ModifyDepthSampleStencil) {
+    // Dawn's DEPS in M150 do not contain the required ANGLE fix for these to pass.
+    DAWN_SUPPRESS_TEST_IF(IsOpenGLES());
+
     // TODO(crbug.com/40238674): Fails on Pixel 10.
     DAWN_SUPPRESS_TEST_IF(IsImgTec());
+
     // Stencil test is always true but the depth test passes only for the
     TestSpec spec1;
     spec1.readonlyAspects = wgpu::TextureAspect::StencilOnly;
@@ -455,6 +465,9 @@ TEST_P(ReadOnlyDepthAndStencilAttachmentTests, ModifyDepthSampleStencil) {
 
 // Test that using depthReadOnly while modifying the stencil aspect works.
 TEST_P(ReadOnlyDepthAndStencilAttachmentTests, SampleDepthModifyStencil) {
+    // Dawn's DEPS in M150 do not contain the required ANGLE fix for these to pass.
+    DAWN_SUPPRESS_TEST_IF(IsOpenGLES());
+
     // Depth/stencil tests are true, the depth is correctly sampled from the depthClearValue.
     // The stencil is written to the value of the stencil ref.
     TestSpec spec1;
@@ -480,6 +493,9 @@ TEST_P(ReadOnlyDepthAndStencilAttachmentTests, SampleDepthModifyStencil) {
 
 // Test sampling depth with both the depth and stencil readonly.
 TEST_P(ReadOnlyDepthAndStencilAttachmentTests, BothReadOnlySampleDepth) {
+    // Dawn's DEPS in M150 do not contain the required ANGLE fix for these to pass.
+    DAWN_SUPPRESS_TEST_IF(IsOpenGLES());
+
     // TODO(crbug.com/40238674): Fails on Pixel 10.
     DAWN_SUPPRESS_TEST_IF(IsImgTec());
     // Sample the depth while using both depth an stencil testing.
@@ -504,6 +520,9 @@ TEST_P(ReadOnlyDepthAndStencilAttachmentTests, BothReadOnlySampleDepth) {
 
 // Test sampling stencil with both the depth and stencil readonly.
 TEST_P(ReadOnlyDepthAndStencilAttachmentTests, BothReadOnlySampleStencil) {
+    // Dawn's DEPS in M150 do not contain the required ANGLE fix for these to pass.
+    DAWN_SUPPRESS_TEST_IF(IsOpenGLES());
+
     // TODO(crbug.com/40238674): Fails on Pixel 10.
     DAWN_SUPPRESS_TEST_IF(IsImgTec());
     // Sample the stencil while using both depth an stencil testing.
