@@ -107,7 +107,7 @@ WireResult Server::DoDeviceCreateComputePipelineAsync(
     userdata->device = device.AsHandle();
     userdata->eventManager = eventManager;
     userdata->future = future;
-    userdata->pipelineObjectID = pipeline.id;
+    userdata->pipeline = pipeline.AsHandle();
 
     mProcs.deviceCreateComputePipelineAsync(
         device->handle, descriptor,
@@ -127,7 +127,7 @@ void Server::OnCreateComputePipelineAsyncCallback(CreatePipelineAsyncUserData* d
     cmd.message = message;
 
     if (status == WGPUCreatePipelineAsyncStatus_Success &&
-        FillReservation(data->pipelineObjectID, pipeline) == WireResult::FatalError) {
+        FillReservation(data->pipeline, pipeline) == WireResult::FatalError) {
         cmd.status = WGPUCreatePipelineAsyncStatus_CallbackCancelled;
         cmd.message = ToOutputStringView("Destroyed before request was fulfilled.");
     }
@@ -147,7 +147,7 @@ WireResult Server::DoDeviceCreateRenderPipelineAsync(
     userdata->device = device.AsHandle();
     userdata->eventManager = eventManager;
     userdata->future = future;
-    userdata->pipelineObjectID = pipeline.id;
+    userdata->pipeline = pipeline.AsHandle();
 
     mProcs.deviceCreateRenderPipelineAsync(
         device->handle, descriptor,
@@ -167,7 +167,7 @@ void Server::OnCreateRenderPipelineAsyncCallback(CreatePipelineAsyncUserData* da
     cmd.message = message;
 
     if (status == WGPUCreatePipelineAsyncStatus_Success &&
-        FillReservation(data->pipelineObjectID, pipeline) == WireResult::FatalError) {
+        FillReservation(data->pipeline, pipeline) == WireResult::FatalError) {
         cmd.status = WGPUCreatePipelineAsyncStatus_CallbackCancelled;
         cmd.message = ToOutputStringView("Destroyed before request was fulfilled.");
     }
