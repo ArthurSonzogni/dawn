@@ -62,21 +62,21 @@ namespace dawn::wire::server {
             return std::get<KnownObjects<T>>(mKnown).Get(id, result);
         }
         template <typename T>
-        WireResult FillReservation(ObjectHandle handle, T nativeHandle, Known<T>* known = nullptr) {
-            auto result = std::get<KnownObjects<T>>(mKnown).FillReservation(handle, nativeHandle, known);
+        WireResult FillReservation(ObjectId id, T handle, Known<T>* known = nullptr) {
+            auto result = std::get<KnownObjects<T>>(mKnown).FillReservation(id, handle, known);
             if (result == WireResult::FatalError) {
-                Release(nativeHandle);
+                Release(handle);
             }
             return result;
         }
         template <typename T>
         WireResult Allocate(Reserved<T>* result,
-                            ObjectHandle handle,
+                            ObjectHandle handler,
                             AllocationState state = AllocationState::Allocated) {
             // Allocations always take the lock because |vector::push_back| may be called which
             // can invalidate pointers.
             auto serverGuard = GetGuard();
-            return std::get<KnownObjects<T>>(mKnown).Allocate(result, handle, state);
+            return std::get<KnownObjects<T>>(mKnown).Allocate(result, handler, state);
         }
         template <typename T>
         WireResult Free(ObjectId id, ObjectData<T>* data) {

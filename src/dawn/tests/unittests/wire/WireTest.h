@@ -180,8 +180,6 @@ class WireTest : virtual public testing::Test {
     dawn::wire::WireServer* GetWireServer();
     dawn::wire::WireClient* GetWireClient();
 
-    utils::TerribleCommandBuffer* GetC2SCommandBuffer();
-
     size_t GetC2SMaxAllocationSize();
 
     void DeleteServer();
