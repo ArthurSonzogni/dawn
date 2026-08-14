@@ -191,6 +191,7 @@ enum class Toggle {
     VulkanForceStaticSamplersForExternalTextures,
     D3D12UseHLSL2021,
     MetalFixU32DivMod,
+    VulkanDisallowNPOTDepthStencilMipmaps,
 
     // Once all backends have been updated to be thread safe for waiting, we can remove this toggle.
     WaitIsThreadSafe,
