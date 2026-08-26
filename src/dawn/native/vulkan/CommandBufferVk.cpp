@@ -1417,6 +1417,10 @@ MaybeError CommandBuffer::RecordCommands(CommandRecordingContext* recordingConte
 
             case Command::ResolveQuerySet: {
                 ResolveQuerySetCmd* cmd = mCommands.NextCommand<ResolveQuerySetCmd>();
+                if (cmd->queryCount == QueryIndex{0u}) {
+                    continue;
+                }
+
                 QuerySet* querySet = ToBackend(cmd->querySet.Get());
                 Buffer* destination = ToBackend(cmd->destination.Get());
 
