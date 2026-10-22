@@ -72,6 +72,7 @@ if (checkout_v8 && dawn_node) {
 
     deps = [
       "${dawn_root}/src/dawn/common",
+      "${dawn_root}/src/dawn/node:dawn_node_interop",
       "${dawn_root}/src/dawn/node/napi_v8",
       "//third_party/v8/src:v8",
     ]
