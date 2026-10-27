@@ -278,6 +278,10 @@ ResultOrError<Ref<Texture>> Texture::Create(Device* device,
         // MAX_LEVEL have been defined.
         DAWN_GL_TRY(gl, TexParameteri(target, GL_TEXTURE_MAX_LEVEL, levels - 1));
 
+        // Ensure that the base level of the texture conforms to device-specific limits.
+        // May generate an OOM.
+        DAWN_TRY(VerifyBaseLevelFootprint(texture.Get()));
+
         if (clear) {
             DAWN_TRY(texture->ClearTexture(gl, texture->GetAllSubresources(),
                                            TextureBase::ClearValue::NonZero));

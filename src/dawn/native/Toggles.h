@@ -218,6 +218,7 @@ enum class Toggle {
     ShadowCopyMapWrite,
     DisableTransientAttachment,
     AutoMapBackendBuffer,
+    Limit3DTexturePotFootprintTo4GB,
 
     EnumCount,
     InvalidEnum = EnumCount,

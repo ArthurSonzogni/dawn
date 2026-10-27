@@ -893,6 +893,11 @@ static constexpr ToggleEnumAndInfoList kToggleNameAndInfoList = {{
       "Backend will automatically map the buffer when it's not in use by GPU, to allow "
       "front-end's MapAsync and Unmap calls to become cheap without acquiring any lock internally.",
       "https://crbug.com/dawn/481158754", ToggleStage::Device}},
+    {Toggle::Limit3DTexturePotFootprintTo4GB,
+     {"limit_3d_texture_pot_footprint_to_4gb",
+      "Synthesize an OutOfMemory error on 3D texture creation if the power-of-two rounded byte "
+      "footprint of the texture is 4 GiB or larger. Works around a PowerVR driver bug.",
+      "https://crbug.com/497202432", ToggleStage::Device}},
 
     // Comment to separate the }} so it is clearer what to copy-paste to add a toggle.
 }};
