@@ -204,8 +204,8 @@ void CreatePipelineAsyncEvent<PipelineType, CreatePipelineAsyncCallbackInfo>::Co
                 const std::string& label = mPipeline->GetLabel();
                 mPipeline = PipelineType::MakeError(device.Get(), label.c_str());
             }
-            pipeline = std::move(mPipeline);
         } else if (mError != nullptr) {
+            mPipeline = nullptr;
             switch (mError->GetType()) {
                 case InternalErrorType::Validation:
                     status = WGPUCreatePipelineAsyncStatus_ValidationError;
@@ -217,8 +217,8 @@ void CreatePipelineAsyncEvent<PipelineType, CreatePipelineAsyncCallbackInfo>::Co
             message = mError->GetFormattedMessage();
         } else {
             AddOrGetCachedPipeline();
-            pipeline = std::move(mPipeline);
         }
+        pipeline = std::move(mPipeline);
     }
 
     if (mCallback) {
