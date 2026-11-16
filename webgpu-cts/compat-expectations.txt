@@ -143,6 +143,11 @@ crbug.com/407076121 [ linux nvidia ] webgpu:shader,execution,limits:const_array_
 # point.
 ################################################################################
 
+# Skips to merge a CL back to a release branch.
+# CTS has already been updated on ToT to address these issues.
+crbug.com/00000000 webgpu:api,validation,capability_checks,limits,maxComputeWorkgroupStorageSize:createComputePipeline,at_over:* [ Skip ]
+crbug.com/00000000 webgpu:api,validation,compute_pipeline:limits,workgroup_storage_size:* [ Skip ]
+
 # Skip until unrestricted_aliasing lands.
 crbug.com/495899057 [ android ] webgpu:shader,validation,parse,requires:have_all_language_features:feature="unrestricted_aliasing" [ Skip ]
 crbug.com/495899057 [ mac ] webgpu:shader,validation,parse,requires:have_all_language_features:feature="unrestricted_aliasing" [ Skip ]
