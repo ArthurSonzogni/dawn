@@ -163,6 +163,7 @@ def main():
             'build',
             '--noexperimental_guard_against_concurrent_changes',
             '--nowatchfs',
+            '--keep_going',
             '--compilation_mode=opt',
             '--define=litert_link_capi_so=true',
             '--define=resolve_symbols_in_exec=false',
