@@ -434,7 +434,7 @@ deps = {
 
   # TODO(crbug.com/566128737): Temporarily pin to preview LinAlg version
   'third_party/directx-shader-compiler/src': {
-    'url': '{chromium_git}/external/github.com/microsoft/DirectXShaderCompiler@4c890fcb0366ff59df4ccb49a42e2105f53d7fb7',
+    'url': '{chromium_git}/external/github.com/microsoft/DirectXShaderCompiler@454ac22efea593bbf416ca1a9b1e610b4e8350be',
   },
 
   'third_party/directx-headers/src': {
