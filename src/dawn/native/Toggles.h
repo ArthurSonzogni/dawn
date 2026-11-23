@@ -237,6 +237,7 @@ enum class Toggle {
     LimitMaxTextureBytesTo1MB,
     VulkanUseDescriptorUpdateTemplate,
     D3D12DisableRelaxedBufferTextureCopyAlignmentForCompressedFormats,
+    GLLimitTextureImageUnitsTo13,
 
     EnumCount,
     InvalidEnum = EnumCount,
