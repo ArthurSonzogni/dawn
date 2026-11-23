@@ -234,6 +234,7 @@ enum class Toggle {
     VulkanRelaxMaxInterStageShaderVariables,
     Limit3DTexturePotFootprintTo4GB,
     LimitMaxTextureBytesTo1MB,
+    GLLimitTextureImageUnitsTo13,
 
     EnumCount,
     InvalidEnum = EnumCount,

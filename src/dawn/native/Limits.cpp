@@ -349,6 +349,13 @@ LimitsForShaderModuleParseRequest LimitsForShaderModuleParseRequest::Create(cons
 #undef DAWN_INTERNAL_LIMITS_FOREACH_MEMBER_ASSIGNMENT
 #undef DAWN_INTERNAL_LIMITS_MEMBER_ASSIGNMENT
 
+void LimitGLTextureImageUnits(CombinedLimits* limits) {
+    limits->v1.maxSampledTexturesPerShaderStage =
+        std::min(limits->v1.maxSampledTexturesPerShaderStage, kLimitedGLTextureImageUnits);
+    limits->v1.maxSamplersPerShaderStage =
+        std::min(limits->v1.maxSamplersPerShaderStage, kLimitedGLTextureImageUnits);
+}
+
 void NormalizeLimits(CombinedLimits* limits) {
     // Enforce internal Dawn constants for some limits to ensure they don't go over fixed limits
     // in Dawn's internal code.
