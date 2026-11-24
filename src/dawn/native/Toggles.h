@@ -235,6 +235,7 @@ enum class Toggle {
     Limit3DTexturePotFootprintTo4GB,
     LimitMaxTextureBytesTo1MB,
     GLLimitTextureImageUnitsTo13,
+    MetalPolyfillExtractBits,
 
     EnumCount,
     InvalidEnum = EnumCount,
