@@ -972,6 +972,11 @@ static constexpr ToggleEnumAndInfoList kToggleNameAndInfoList = {{
       "Synthesize an OutOfMemory error on 3D texture creation if the power-of-two rounded byte "
       "footprint of the texture is 4 GiB or larger. Works around a PowerVR driver bug.",
       "https://crbug.com/497202432", ToggleStage::Device}},
+    {Toggle::MetalPolyfillExtractBits,
+     {"metal_polyfill_extract_bits",
+      "Use the full polyfill for extractBits() instead of clamping to work around an Apple Metal "
+      "compiler bug.",
+      "https://crbug.com/587021111", ToggleStage::Device}},
 
     // Comment to separate the }} so it is clearer what to copy-paste to add a toggle.
 }};

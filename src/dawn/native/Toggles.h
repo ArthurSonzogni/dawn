@@ -234,6 +234,7 @@ enum class Toggle {
     PolyfillBoolVecDynamicStore,
     VulkanRelaxMaxInterStageShaderVariables,
     Limit3DTexturePotFootprintTo4GB,
+    MetalPolyfillExtractBits,
 
     EnumCount,
     InvalidEnum = EnumCount,
