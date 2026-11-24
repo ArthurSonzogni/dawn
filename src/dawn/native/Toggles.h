@@ -238,6 +238,7 @@ enum class Toggle {
     VulkanUseDescriptorUpdateTemplate,
     D3D12DisableRelaxedBufferTextureCopyAlignmentForCompressedFormats,
     GLLimitTextureImageUnitsTo13,
+    MetalPolyfillExtractBits,
 
     EnumCount,
     InvalidEnum = EnumCount,
